@@ -1,10 +1,31 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
-import { Search, Sparkles, Key, AlertCircle, Bookmark, Copy, Check, Trash2, ArrowRight } from 'lucide-react';
+import React, { useState, useEffect, useRef } from 'react';
+import {
+  Search,
+  Sparkles,
+  Key,
+  AlertCircle,
+  Bookmark,
+  Copy,
+  Check,
+  Trash2,
+  ArrowRight,
+  FolderGit2,
+  Star,
+  Lock,
+} from 'lucide-react';
 import { GithubIcon } from './GithubIcon';
 import { parseGitHubUrl } from '@/lib/github';
 import { getSavedRepos, removeSavedRepo, SavedRepo } from '@/lib/savedRepos';
+
+interface UserRepoItem {
+  name: string;
+  fullName: string;
+  description: string | null;
+  stars: number;
+  isPrivate: boolean;
+}
 
 interface RepoInputProps {
   onLoadRepo: (url: string, token?: string) => void;
@@ -12,6 +33,7 @@ interface RepoInputProps {
   error?: string | null;
   initialValue?: string;
   onOpenSavedModal?: () => void;
+  githubUsername?: string | null;
 }
 
 const POPULAR_REPOS = [
@@ -28,6 +50,7 @@ export default function RepoInput({
   error,
   initialValue = '',
   onOpenSavedModal,
+  githubUsername,
 }: RepoInputProps) {
   const [inputValue, setInputValue] = useState(initialValue);
   const [showTokenInput, setShowTokenInput] = useState(false);
@@ -36,6 +59,13 @@ export default function RepoInput({
   const [savedRepos, setSavedRepos] = useState<SavedRepo[]>([]);
   const [copiedRepo, setCopiedRepo] = useState<string | null>(null);
 
+  // Auto-suggestions for logged-in user's own repos
+  const [userRepos, setUserRepos] = useState<UserRepoItem[]>([]);
+  const [showSuggestions, setShowSuggestions] = useState(false);
+  const [selectedIndex, setSelectedIndex] = useState<number>(-1);
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  // Load saved repos
   useEffect(() => {
     const load = () => {
       setSavedRepos(getSavedRepos());
@@ -48,17 +78,104 @@ export default function RepoInput({
     };
   }, []);
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    setInputError(null);
-
-    const parsed = parseGitHubUrl(inputValue);
-    if (!parsed) {
-      setInputError('Please enter a valid GitHub URL (e.g., https://github.com/facebook/react) or owner/repo.');
+  // Fetch logged in user's GitHub repositories for autocomplete suggestions
+  useEffect(() => {
+    if (!githubUsername) {
+      setUserRepos([]);
       return;
     }
 
-    onLoadRepo(inputValue, patToken.trim() || undefined);
+    async function fetchUserRepos() {
+      try {
+        const res = await fetch(`/api/user-repos?username=${encodeURIComponent(githubUsername || '')}`);
+        if (res.ok) {
+          const data = await res.json();
+          if (Array.isArray(data.repos)) {
+            setUserRepos(data.repos);
+          }
+        }
+      } catch {
+        // Fallback gracefully
+      }
+    }
+
+    fetchUserRepos();
+  }, [githubUsername]);
+
+  // Handle clicking outside to close suggestions
+  useEffect(() => {
+    function handleClickOutside(e: MouseEvent) {
+      if (containerRef.current && !containerRef.current.contains(e.target as Node)) {
+        setShowSuggestions(false);
+      }
+    }
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
+
+  // Filter user's repos based on what is typed
+  const trimmed = inputValue.trim().toLowerCase();
+  const matchingSuggestions = userRepos.filter((r) => {
+    if (!trimmed) return false;
+    return (
+      r.name.toLowerCase().includes(trimmed) ||
+      r.fullName.toLowerCase().includes(trimmed)
+    );
+  });
+
+  const handleSubmit = (e?: React.FormEvent) => {
+    if (e) e.preventDefault();
+    setInputError(null);
+    setShowSuggestions(false);
+
+    const val = inputValue.trim();
+    if (!val) return;
+
+    // If user typed only a repo name and they have a matching own repo or username
+    if (!val.includes('/') && !val.startsWith('http') && githubUsername) {
+      const match = userRepos.find((r) => r.name.toLowerCase() === val.toLowerCase());
+      if (match) {
+        onLoadRepo(match.fullName, patToken.trim() || undefined);
+        return;
+      }
+      // If no exact match but user is logged in, try loading username/val
+      onLoadRepo(`${githubUsername}/${val}`, patToken.trim() || undefined);
+      return;
+    }
+
+    const parsed = parseGitHubUrl(val);
+    if (!parsed) {
+      setInputError('Please enter a valid repository name, owner/repo, or GitHub URL.');
+      return;
+    }
+
+    onLoadRepo(val, patToken.trim() || undefined);
+  };
+
+  const handleSelectSuggestion = (fullName: string) => {
+    setInputValue(fullName);
+    setShowSuggestions(false);
+    setInputError(null);
+    onLoadRepo(fullName, patToken.trim() || undefined);
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (!showSuggestions || matchingSuggestions.length === 0) return;
+
+    if (e.key === 'ArrowDown') {
+      e.preventDefault();
+      setSelectedIndex((prev) => (prev < matchingSuggestions.length - 1 ? prev + 1 : 0));
+    } else if (e.key === 'ArrowUp') {
+      e.preventDefault();
+      setSelectedIndex((prev) => (prev > 0 ? prev - 1 : matchingSuggestions.length - 1));
+    } else if (e.key === 'Enter' && selectedIndex >= 0) {
+      e.preventDefault();
+      handleSelectSuggestion(matchingSuggestions[selectedIndex].fullName);
+    } else if (e.key === 'Escape') {
+      setShowSuggestions(false);
+    }
   };
 
   const handleChipClick = (url: string) => {
@@ -91,39 +208,98 @@ export default function RepoInput({
   };
 
   return (
-    <div className="repo-input-wrapper">
+    <div className="repo-input-wrapper" ref={containerRef}>
       <form onSubmit={handleSubmit} className="repo-input-form">
-        <div className="input-group-main">
-          <div className="input-icon-wrapper">
-            <GithubIcon size={22} className="github-icon" />
+        <div className="input-group-container">
+          <div className="input-group-main">
+            <div className="input-icon-wrapper">
+              <GithubIcon size={22} className="github-icon" />
+            </div>
+
+            <input
+              type="text"
+              placeholder={
+                githubUsername
+                  ? `Type your repo name (e.g. tcs) or owner/repo...`
+                  : `https://github.com/owner/repo or owner/repo...`
+              }
+              value={inputValue}
+              onChange={(e) => {
+                setInputValue(e.target.value);
+                if (inputError) setInputError(null);
+                setShowSuggestions(true);
+                setSelectedIndex(-1);
+              }}
+              onFocus={() => {
+                if (inputValue.trim()) setShowSuggestions(true);
+              }}
+              onKeyDown={handleKeyDown}
+              className="repo-text-input"
+              autoFocus
+              autoComplete="off"
+            />
+
+            <button
+              type="submit"
+              disabled={isLoading || !inputValue.trim()}
+              className="repo-submit-btn"
+            >
+              {isLoading ? (
+                <span className="btn-spinner"></span>
+              ) : (
+                <>
+                  <Search size={18} />
+                  <span>Explore Code</span>
+                </>
+              )}
+            </button>
           </div>
 
-          <input
-            type="text"
-            placeholder="https://github.com/owner/repo or owner/repo..."
-            value={inputValue}
-            onChange={(e) => {
-              setInputValue(e.target.value);
-              if (inputError) setInputError(null);
-            }}
-            className="repo-text-input"
-            autoFocus
-          />
-
-          <button
-            type="submit"
-            disabled={isLoading || !inputValue.trim()}
-            className="repo-submit-btn"
-          >
-            {isLoading ? (
-              <span className="btn-spinner"></span>
-            ) : (
-              <>
-                <Search size={18} />
-                <span>Explore Code</span>
-              </>
-            )}
-          </button>
+          {/* Autocomplete Suggestions Popup for Logged-In User Repos */}
+          {showSuggestions && matchingSuggestions.length > 0 && (
+            <div className="repo-suggestions-dropdown">
+              <div className="suggestions-header">
+                <span className="suggestions-badge">
+                  <GithubIcon size={12} />
+                  <span>Your GitHub Repositories ({matchingSuggestions.length})</span>
+                </span>
+                <span className="suggestions-hint">Press ↑↓ to navigate</span>
+              </div>
+              <div className="suggestions-list">
+                {matchingSuggestions.map((item, idx) => (
+                  <div
+                    key={item.fullName}
+                    className={`suggestion-item ${selectedIndex === idx ? 'selected' : ''}`}
+                    onClick={() => handleSelectSuggestion(item.fullName)}
+                    onMouseEnter={() => setSelectedIndex(idx)}
+                  >
+                    <div className="suggestion-item-main">
+                      <FolderGit2 size={16} className="text-accent" />
+                      <div className="suggestion-info">
+                        <div className="suggestion-name-row">
+                          <span className="suggestion-name">{item.name}</span>
+                          <span className="suggestion-fullname">{item.fullName}</span>
+                          {item.isPrivate && <Lock size={11} className="text-muted" />}
+                        </div>
+                        {item.description && (
+                          <p className="suggestion-desc">{item.description}</p>
+                        )}
+                      </div>
+                    </div>
+                    <div className="suggestion-right">
+                      {item.stars > 0 && (
+                        <span className="suggestion-stars">
+                          <Star size={11} className="text-warning" />
+                          {item.stars}
+                        </span>
+                      )}
+                      <ArrowRight size={13} className="suggestion-arrow" />
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
         </div>
 
         {/* Optional Personal Access Token Toggle */}
@@ -252,4 +428,3 @@ export default function RepoInput({
     </div>
   );
 }
-

@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect, useCallback } from 'react';
+import { SignInButton, UserButton, useUser } from '@clerk/nextjs';
 import RepoInput from '@/components/RepoInput';
 import RepoHeader from '@/components/RepoHeader';
 import FileTree from '@/components/FileTree';
@@ -32,9 +33,10 @@ import {
 import { GithubIcon } from '@/components/GithubIcon';
 import { WhatsappIcon } from '@/components/WhatsappIcon';
 import InstallPrompt from '@/components/InstallPrompt';
-import { getSavedRepos } from '@/lib/savedRepos';
+import { getSavedRepos, syncCloudSavedRepos } from '@/lib/savedRepos';
 
 export default function Home() {
+  const { isLoaded, isSignedIn, user } = useUser();
   const [repoInfo, setRepoInfo] = useState<RepoInfo | null>(null);
   const [rawTree, setRawTree] = useState<TreeNode[]>([]);
   const [fileTree, setFileTree] = useState<FileTreeNode[]>([]);
@@ -51,6 +53,12 @@ export default function Home() {
   const [showSavedModal, setShowSavedModal] = useState(false);
   const [savedCount, setSavedCount] = useState(0);
 
+  // Extract GitHub username if authenticated via GitHub
+  const githubUsername =
+    user?.externalAccounts?.find((acc) => acc.provider === 'github')?.username ||
+    user?.username ||
+    null;
+
   useEffect(() => {
     const updateCount = () => {
       setSavedCount(getSavedRepos().length);
@@ -61,6 +69,15 @@ export default function Home() {
       window.removeEventListener('saved_repos_changed', updateCount);
     };
   }, []);
+
+  // Sync cloud saved repos with Neon DB when user signs in
+  useEffect(() => {
+    if (isSignedIn) {
+      syncCloudSavedRepos().then((repos) => {
+        setSavedCount(repos.length);
+      });
+    }
+  }, [isSignedIn]);
 
   // Load a file from the repository
   const loadFile = useCallback(
@@ -228,6 +245,25 @@ export default function Home() {
               <span className="hide-on-mobile">WhatsApp</span>
             </a>
 
+            {/* Clerk GitHub Auth */}
+            {isLoaded && isSignedIn ? (
+              <div className="navbar-user-group">
+                {githubUsername && (
+                  <span className="navbar-github-handle hide-on-mobile">
+                    @{githubUsername}
+                  </span>
+                )}
+                <UserButton />
+              </div>
+            ) : isLoaded ? (
+              <SignInButton mode="modal">
+                <button className="navbar-signin-btn" title="Sign In with GitHub">
+                  <GithubIcon size={14} />
+                  <span className="hide-on-mobile">Sign In</span>
+                </button>
+              </SignInButton>
+            ) : null}
+
             <InstallPrompt />
           </div>
         </div>
@@ -251,12 +287,13 @@ export default function Home() {
               Paste any GitHub repository link below to browse folder structures and read code with syntax highlighting.
             </p>
 
-            {/* Input Component */}
+            {/* Input Component with live auto-suggestions for logged-in user repos */}
             <RepoInput
               onLoadRepo={handleLoadRepo}
               isLoading={isLoadingRepo}
               error={error}
               onOpenSavedModal={() => setShowSavedModal(true)}
+              githubUsername={githubUsername}
             />
 
           </div>
