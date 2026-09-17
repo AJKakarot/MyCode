@@ -268,7 +268,7 @@ export default function Home() {
                 <UserButton />
               </div>
             ) : isLoaded ? (
-              <SignInButton mode="modal">
+              <SignInButton mode="modal" fallbackRedirectUrl="/" signUpFallbackRedirectUrl="/">
                 <button className="navbar-github-login-btn" title="Sign In with GitHub">
                   <GithubIcon size={16} />
                   <span className="hide-on-mobile">GitHub Login</span>
