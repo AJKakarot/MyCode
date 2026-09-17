@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useCallback } from 'react';
 import Link from 'next/link';
-import { SignInButton, UserButton, useUser } from '@clerk/nextjs';
+import { SignInButton, SignUpButton, UserButton, useUser } from '@clerk/nextjs';
 import RepoInput from '@/components/RepoInput';
 import RepoHeader from '@/components/RepoHeader';
 import FileTree from '@/components/FileTree';
@@ -262,12 +262,12 @@ export default function Home() {
                 <UserButton />
               </div>
             ) : isLoaded ? (
-              <SignInButton mode="modal" fallbackRedirectUrl="/" signUpFallbackRedirectUrl="/">
+              <SignUpButton mode="modal" fallbackRedirectUrl="/" signInFallbackRedirectUrl="/">
                 <button className="navbar-github-login-btn" title="Sign In with GitHub">
                   <GithubIcon size={16} />
                   <span className="hide-on-mobile">GitHub Login</span>
                 </button>
-              </SignInButton>
+              </SignUpButton>
             ) : null}
 
             <InstallPrompt />
