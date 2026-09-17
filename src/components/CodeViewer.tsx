@@ -205,13 +205,13 @@ export default function CodeViewer({ content, filePath, fileSize, rawUrl }: Code
       <div
         className="code-body-wrapper"
         style={{
+          ['--code-font-size' as any]: `${fontSize}px`,
           fontSize: `${fontSize}px`,
         }}
       >
         <div
           className="code-line-numbers"
           aria-hidden="true"
-          style={{ fontSize: `${Math.max(10, fontSize - 1.5)}px` }}
         >
           {lines.map((_, index) => (
             <div key={index} className="line-number">
@@ -222,11 +222,9 @@ export default function CodeViewer({ content, filePath, fileSize, rawUrl }: Code
 
         <pre
           className={`code-pre ${wrapLines ? 'wrap-lines' : ''}`}
-          style={{ fontSize: `${fontSize}px` }}
         >
           <code
             className={`language-${language}`}
-            style={{ fontSize: `${fontSize}px` }}
           >
             {content}
           </code>

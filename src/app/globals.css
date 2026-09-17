@@ -1988,7 +1988,7 @@ html, body {
   overflow: auto;
   background: var(--bg-code);
   font-family: var(--font-mono);
-  font-size: 0.84rem;
+  font-size: var(--code-font-size, 13.5px) !important;
   line-height: 1.6;
 }
 
@@ -1999,11 +1999,12 @@ html, body {
   user-select: none;
   background: rgba(10, 13, 20, 0.6);
   border-right: 1px solid #1a2234;
-  font-size: 0.78rem;
+  font-size: calc(var(--code-font-size, 13.5px) * 0.9) !important;
 }
 
 .line-number {
   height: 1.6em;
+  line-height: 1.6em;
 }
 
 .code-pre {
@@ -2012,6 +2013,7 @@ html, body {
   background: transparent !important;
   overflow-x: auto;
   flex: 1;
+  font-size: var(--code-font-size, 13.5px) !important;
 }
 
 .code-pre.wrap-lines {
@@ -2019,9 +2021,12 @@ html, body {
   word-break: break-word;
 }
 
-.code-pre code {
+.code-pre code,
+.code-pre code[class*="language-"],
+.code-pre[class*="language-"],
+pre[class*="language-"] > code {
   font-family: var(--font-mono) !important;
-  font-size: 0.84rem !important;
+  font-size: var(--code-font-size, 13.5px) !important;
   line-height: 1.6 !important;
 }
 
@@ -2451,18 +2456,26 @@ html, body {
 
   .code-body-wrapper {
     -webkit-overflow-scrolling: touch;
+    font-size: var(--code-font-size, 11.5px) !important;
   }
 
   .code-line-numbers {
-    min-width: 26px;
+    min-width: 24px;
     padding: 10px 4px 10px 2px;
-    font-size: 0.72rem;
+    font-size: calc(var(--code-font-size, 11.5px) * 0.9) !important;
   }
 
   .code-pre {
     padding: 10px 8px !important;
-    font-size: 0.78rem;
+    font-size: var(--code-font-size, 11.5px) !important;
     -webkit-overflow-scrolling: touch;
+  }
+
+  .code-pre code,
+  .code-pre code[class*="language-"],
+  .code-pre[class*="language-"],
+  pre[class*="language-"] > code {
+    font-size: var(--code-font-size, 11.5px) !important;
   }
 
   .code-pre.wrap-lines {
