@@ -2979,6 +2979,8 @@ html, body {
   border: 1px solid rgba(37, 211, 102, 0.3);
   padding: 16px;
   border-radius: var(--radius-md);
+  min-height: 84px;
+  box-sizing: border-box;
 }
 
 .contact-hero-icon-box {
@@ -2991,6 +2993,10 @@ html, body {
   justify-content: center;
   color: #25d366;
   flex-shrink: 0;
+}
+
+.contact-hero-content {
+  flex: 1;
 }
 
 .contact-hero-content h4 {
@@ -3021,6 +3027,8 @@ html, body {
   text-decoration: none;
   transition: all 0.2s ease;
   box-shadow: 0 4px 14px rgba(37, 211, 102, 0.35);
+  box-sizing: border-box;
+  min-height: 48px;
 }
 
 .contact-primary-wa-btn:hover {
@@ -3194,6 +3202,8 @@ html, body {
   text-decoration: none;
   transition: all 0.2s ease;
   box-shadow: 0 4px 14px rgba(245, 158, 11, 0.35);
+  box-sizing: border-box;
+  min-height: 48px;
 }
 
 .contact-primary-coffee-btn:hover {

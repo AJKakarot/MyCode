@@ -175,6 +175,16 @@ export default function ContactPage() {
                 </div>
               </div>
 
+              <a
+                href="upi://pay?pa=8840713812@upi&pn=Ajeet%20Gupta&cu=INR&tn=GitCode%20Coffee%20Support"
+                className="contact-primary-coffee-btn"
+                title="Open UPI App to Pay"
+              >
+                <Coffee size={18} />
+                <span>Pay via UPI App (PhonePe / GPay / Paytm)</span>
+                <ExternalLink size={15} />
+              </a>
+
               {/* Details Card */}
               <div className="contact-details-card">
                 <div className="contact-detail-row">
