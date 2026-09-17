@@ -26,7 +26,7 @@ import 'prismjs/components/prism-docker';
 import 'prismjs/components/prism-toml';
 import 'prismjs/components/prism-graphql';
 
-import { Copy, Check, FileCode, ExternalLink, Download, Layers } from 'lucide-react';
+import { Copy, Check, FileCode, ExternalLink, Download, Layers, Plus, Minus } from 'lucide-react';
 import { detectLanguage, formatBytes } from '@/lib/github';
 
 interface CodeViewerProps {
@@ -39,6 +39,17 @@ interface CodeViewerProps {
 export default function CodeViewer({ content, filePath, fileSize, rawUrl }: CodeViewerProps) {
   const [copied, setCopied] = useState(false);
   const [wrapLines, setWrapLines] = useState(false);
+  const [fontSize, setFontSize] = useState<number>(() => {
+    if (typeof window !== 'undefined') {
+      const saved = localStorage.getItem('gitcode_code_font_size');
+      if (saved) {
+        const num = Number(saved);
+        if (!isNaN(num) && num >= 10 && num <= 24) return num;
+      }
+    }
+    return 13.5;
+  });
+
   const fileName = filePath.split('/').pop() || '';
   const language = useMemo(() => detectLanguage(fileName), [fileName]);
 
@@ -50,6 +61,33 @@ export default function CodeViewer({ content, filePath, fileSize, rawUrl }: Code
     // Re-highlight syntax whenever content or language changes
     Prism.highlightAll();
   }, [content, language]);
+
+  const handleZoomIn = () => {
+    setFontSize((prev) => {
+      const next = Math.min(24, prev + 1);
+      if (typeof window !== 'undefined') {
+        localStorage.setItem('gitcode_code_font_size', String(next));
+      }
+      return next;
+    });
+  };
+
+  const handleZoomOut = () => {
+    setFontSize((prev) => {
+      const next = Math.max(10, prev - 1);
+      if (typeof window !== 'undefined') {
+        localStorage.setItem('gitcode_code_font_size', String(next));
+      }
+      return next;
+    });
+  };
+
+  const handleResetZoom = () => {
+    setFontSize(13.5);
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('gitcode_code_font_size', '13.5');
+    }
+  };
 
   const handleCopy = async () => {
     try {
@@ -86,6 +124,37 @@ export default function CodeViewer({ content, filePath, fileSize, rawUrl }: Code
         </div>
 
         <div className="code-header-actions">
+          {/* Zoom / Font Size +/- Controls */}
+          <div className="font-size-control-group" title="Adjust code font size">
+            <button
+              type="button"
+              onClick={handleZoomOut}
+              disabled={fontSize <= 10}
+              className="font-size-btn"
+              title="Decrease font size (-)"
+              aria-label="Decrease font size"
+            >
+              <Minus size={13} />
+            </button>
+            <span
+              className="font-size-val"
+              onClick={handleResetZoom}
+              title="Click to reset font size (13.5px)"
+            >
+              {fontSize}px
+            </span>
+            <button
+              type="button"
+              onClick={handleZoomIn}
+              disabled={fontSize >= 24}
+              className="font-size-btn"
+              title="Increase font size (+)"
+              aria-label="Increase font size"
+            >
+              <Plus size={13} />
+            </button>
+          </div>
+
           <button
             onClick={() => setWrapLines(!wrapLines)}
             className={`action-btn ${wrapLines ? 'active' : ''}`}
@@ -129,8 +198,17 @@ export default function CodeViewer({ content, filePath, fileSize, rawUrl }: Code
       </div>
 
       {/* Code Area with Line Numbers */}
-      <div className="code-body-wrapper">
-        <div className="code-line-numbers" aria-hidden="true">
+      <div
+        className="code-body-wrapper"
+        style={{
+          fontSize: `${fontSize}px`,
+        }}
+      >
+        <div
+          className="code-line-numbers"
+          aria-hidden="true"
+          style={{ fontSize: `${Math.max(10, fontSize - 1.5)}px` }}
+        >
           {lines.map((_, index) => (
             <div key={index} className="line-number">
               {index + 1}
@@ -138,8 +216,14 @@ export default function CodeViewer({ content, filePath, fileSize, rawUrl }: Code
           ))}
         </div>
 
-        <pre className={`code-pre ${wrapLines ? 'wrap-lines' : ''}`}>
-          <code className={`language-${language}`}>
+        <pre
+          className={`code-pre ${wrapLines ? 'wrap-lines' : ''}`}
+          style={{ fontSize: `${fontSize}px` }}
+        >
+          <code
+            className={`language-${language}`}
+            style={{ fontSize: `${fontSize}px` }}
+          >
             {content}
           </code>
         </pre>
