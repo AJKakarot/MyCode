@@ -53,6 +53,29 @@ export default function RepoInput({
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [selectedIndex, setSelectedIndex] = useState<number>(-1);
   const containerRef = useRef<HTMLDivElement>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  // Global shortcut (Cmd+K / Ctrl+K / '/') to focus input
+  useEffect(() => {
+    function handleGlobalShortcuts(e: KeyboardEvent) {
+      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'k') {
+        e.preventDefault();
+        inputRef.current?.focus();
+        inputRef.current?.select();
+      } else if (
+        e.key === '/' &&
+        document.activeElement?.tagName !== 'INPUT' &&
+        document.activeElement?.tagName !== 'TEXTAREA'
+      ) {
+        e.preventDefault();
+        inputRef.current?.focus();
+      }
+    }
+    window.addEventListener('keydown', handleGlobalShortcuts);
+    return () => {
+      window.removeEventListener('keydown', handleGlobalShortcuts);
+    };
+  }, []);
 
   // Fetch logged in user's GitHub repositories for autocomplete suggestions
   useEffect(() => {
@@ -171,6 +194,7 @@ export default function RepoInput({
             </div>
 
             <input
+              ref={inputRef}
               type="text"
               placeholder={
                 githubUsername
@@ -195,6 +219,12 @@ export default function RepoInput({
               autoFocus
               autoComplete="off"
             />
+
+            {!inputValue && (
+              <kbd className="input-shortcut-kbd hide-on-mobile" title="Press ⌘K or / to search">
+                ⌘K
+              </kbd>
+            )}
 
             <button
               type="submit"

@@ -90,6 +90,30 @@ export default function Home() {
     }
   }, [isSignedIn]);
 
+  // Global Keyboard Shortcuts (Cmd+B for Sidebar toggle, Cmd+S for Saved Repos, Escape to close modals)
+  useEffect(() => {
+    function handleGlobalShortcuts(e: KeyboardEvent) {
+      // Cmd+B / Ctrl+B -> Toggle Sidebar
+      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'b') {
+        e.preventDefault();
+        setIsSidebarOpen((prev) => !prev);
+      }
+      // Cmd+S / Ctrl+S -> Toggle Saved Repos Modal
+      else if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 's') {
+        e.preventDefault();
+        setShowSavedModal((prev) => !prev);
+      }
+      // Escape -> Close active modal
+      else if (e.key === 'Escape') {
+        setShowSavedModal(false);
+      }
+    }
+    window.addEventListener('keydown', handleGlobalShortcuts);
+    return () => {
+      window.removeEventListener('keydown', handleGlobalShortcuts);
+    };
+  }, []);
+
   // Load a file from the repository
   const loadFile = useCallback(
     async (path: string, size?: number, repoData?: RepoInfo, token?: string) => {
