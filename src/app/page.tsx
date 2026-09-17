@@ -307,20 +307,6 @@ export default function Home() {
 
           {/* Footer */}
           <footer className="landing-footer">
-            <div className="footer-support-row">
-              <button
-                type="button"
-                onClick={() => {
-                  setContactModalTab('coffee');
-                  setShowContactModal(true);
-                }}
-                className="footer-coffee-pill"
-                title="Support GitCode with a Coffee"
-              >
-                <Coffee size={14} className="text-coffee" />
-                <span>Buy me a Coffee (₹20)</span>
-              </button>
-            </div>
             <p>
               Designed & Built by{' '}
               <a
@@ -331,19 +317,6 @@ export default function Home() {
               >
                 ajeetgupta
               </a>
-              <span className="footer-sep">•</span>
-              <button
-                type="button"
-                onClick={() => {
-                  setContactModalTab('contact');
-                  setShowContactModal(true);
-                }}
-                className="footer-contact-link-btn"
-                title="Contact on WhatsApp / Support"
-              >
-                <WhatsappIcon size={13} className="text-whatsapp" />
-                <span>Contact (+91 8840713812)</span>
-              </button>
             </p>
           </footer>
         </main>
