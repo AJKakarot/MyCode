@@ -251,6 +251,33 @@ html, body {
   line-height: 1.2;
 }
 
+.navbar-whatsapp-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(37, 211, 102, 0.12);
+  border: 1px solid rgba(37, 211, 102, 0.35);
+  color: #25d366;
+  padding: 5px 11px;
+  border-radius: var(--radius-sm);
+  font-size: 0.78rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+  text-decoration: none;
+}
+
+.navbar-whatsapp-btn:hover {
+  background: rgba(37, 211, 102, 0.22);
+  border-color: #25d366;
+  transform: translateY(-1px);
+}
+
+.text-whatsapp {
+  color: #25d366;
+}
+
 .shortcut-install-btn {
   display: flex;
   align-items: center;
@@ -1189,6 +1216,30 @@ html, body {
   text-decoration-color: var(--accent-primary);
 }
 
+.footer-sep {
+  color: var(--text-muted);
+  opacity: 0.5;
+  margin: 0 4px;
+}
+
+.footer-whatsapp-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  color: #25d366;
+  font-weight: 600;
+  font-size: 0.8rem;
+  font-family: var(--font-mono);
+  text-decoration: none;
+  transition: all 0.2s ease;
+}
+
+.footer-whatsapp-link:hover {
+  opacity: 0.85;
+  text-decoration: underline;
+  transform: translateY(-1px);
+}
+
 /* ==========================================================================
    Explorer Layout (Workspace)
    ========================================================================== */
@@ -1837,6 +1888,12 @@ html, body {
   }
 
   .navbar-saved-btn {
+    padding: 4px 7px;
+    font-size: 0.72rem;
+    gap: 4px;
+  }
+
+  .navbar-whatsapp-btn {
     padding: 4px 7px;
     font-size: 0.72rem;
     gap: 4px;

@@ -30,6 +30,7 @@ import {
   Bookmark,
 } from 'lucide-react';
 import { GithubIcon } from '@/components/GithubIcon';
+import { WhatsappIcon } from '@/components/WhatsappIcon';
 import InstallPrompt from '@/components/InstallPrompt';
 import { getSavedRepos } from '@/lib/savedRepos';
 
@@ -215,6 +216,18 @@ export default function Home() {
               {savedCount > 0 && <span className="saved-badge-counter">{savedCount}</span>}
             </button>
 
+            {/* WhatsApp Contact Link */}
+            <a
+              href="https://wa.me/918840713812?text=Hi%20Ajeet,%20I%20have%20a%20question%20or%20feedback%20regarding%20GitCode"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="navbar-whatsapp-btn"
+              title="Message Ajeet on WhatsApp (+91 8840713812)"
+            >
+              <WhatsappIcon size={14} className="text-whatsapp" />
+              <span className="hide-on-mobile">WhatsApp</span>
+            </a>
+
             <InstallPrompt />
           </div>
         </div>
@@ -259,6 +272,17 @@ export default function Home() {
                 className="footer-author"
               >
                 ajeetgupta
+              </a>
+              <span className="footer-sep">•</span>
+              <a
+                href="https://wa.me/918840713812?text=Hi%20Ajeet,%20I%20have%20a%20question%20or%20feedback%20regarding%20GitCode"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="footer-whatsapp-link"
+                title="Message on WhatsApp"
+              >
+                <WhatsappIcon size={13} className="text-whatsapp" />
+                <span>+91 8840713812</span>
               </a>
             </p>
           </footer>
