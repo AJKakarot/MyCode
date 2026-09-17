@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from 'next';
 import { ClerkProvider } from '@clerk/nextjs';
+import { dark } from '@clerk/themes';
 import './globals.css';
 
 export const metadata: Metadata = {
@@ -35,6 +36,7 @@ export default function RootLayout({
       signInUrl="/"
       signUpUrl="/"
       appearance={{
+        theme: dark,
         variables: {
           colorPrimary: '#38bdf8',
           colorBackground: '#101522',
