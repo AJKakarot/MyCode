@@ -9,7 +9,7 @@ import CodeViewer from '@/components/CodeViewer';
 import MarkdownViewer from '@/components/MarkdownViewer';
 import ImageViewer from '@/components/ImageViewer';
 import SavedReposModal from '@/components/SavedReposModal';
-import CoffeeModal from '@/components/CoffeeModal';
+import ContactModal from '@/components/ContactModal';
 import {
   parseGitHubUrl,
   fetchRepoDetails,
@@ -31,6 +31,7 @@ import {
   AlertTriangle,
   Bookmark,
   Coffee,
+  MessageCircle,
 } from 'lucide-react';
 import { GithubIcon } from '@/components/GithubIcon';
 import { WhatsappIcon } from '@/components/WhatsappIcon';
@@ -53,7 +54,8 @@ export default function Home() {
   const [userToken, setUserToken] = useState<string | undefined>(undefined);
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const [showSavedModal, setShowSavedModal] = useState(false);
-  const [showCoffeeModal, setShowCoffeeModal] = useState(false);
+  const [showContactModal, setShowContactModal] = useState(false);
+  const [contactModalTab, setContactModalTab] = useState<'contact' | 'coffee'>('contact');
   const [savedCount, setSavedCount] = useState(0);
 
   // Extract GitHub username if authenticated via GitHub
@@ -236,27 +238,18 @@ export default function Home() {
               {savedCount > 0 && <span className="saved-badge-counter">{savedCount}</span>}
             </button>
 
-            {/* WhatsApp Contact Link */}
-            <a
-              href="https://wa.me/918840713812?text=Hi%20Ajeet,%20I%20have%20a%20question%20or%20feedback%20regarding%20GitCode"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="navbar-whatsapp-btn"
-              title="Message Ajeet on WhatsApp (+91 8840713812)"
-            >
-              <WhatsappIcon size={14} className="text-whatsapp" />
-              <span className="hide-on-mobile">WhatsApp</span>
-            </a>
-
-            {/* Buy me a Coffee Support Button */}
+            {/* Contact & Support Button (WhatsApp + Coffee) */}
             <button
               type="button"
-              onClick={() => setShowCoffeeModal(true)}
-              className="navbar-coffee-btn"
-              title="Buy me a Coffee (₹20)"
+              onClick={() => {
+                setContactModalTab('contact');
+                setShowContactModal(true);
+              }}
+              className="navbar-contact-btn"
+              title="Contact on WhatsApp & Buy Coffee"
             >
-              <Coffee size={14} className="text-coffee" />
-              <span className="hide-on-mobile">Buy Coffee</span>
+              <MessageCircle size={14} className="text-accent" />
+              <span className="hide-on-mobile">Contact</span>
             </button>
 
             {/* Clerk GitHub Auth */}
@@ -317,7 +310,10 @@ export default function Home() {
             <div className="footer-support-row">
               <button
                 type="button"
-                onClick={() => setShowCoffeeModal(true)}
+                onClick={() => {
+                  setContactModalTab('coffee');
+                  setShowContactModal(true);
+                }}
                 className="footer-coffee-pill"
                 title="Support GitCode with a Coffee"
               >
@@ -336,16 +332,18 @@ export default function Home() {
                 ajeetgupta
               </a>
               <span className="footer-sep">•</span>
-              <a
-                href="https://wa.me/918840713812?text=Hi%20Ajeet,%20I%20have%20a%20question%20or%20feedback%20regarding%20GitCode"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="footer-whatsapp-link"
-                title="Message on WhatsApp"
+              <button
+                type="button"
+                onClick={() => {
+                  setContactModalTab('contact');
+                  setShowContactModal(true);
+                }}
+                className="footer-contact-link-btn"
+                title="Contact on WhatsApp / Support"
               >
                 <WhatsappIcon size={13} className="text-whatsapp" />
-                <span>+91 8840713812</span>
-              </a>
+                <span>Contact (+91 8840713812)</span>
+              </button>
             </p>
           </footer>
         </main>
@@ -430,10 +428,11 @@ export default function Home() {
         onSelectRepo={(url) => handleLoadRepo(url, userToken)}
       />
 
-      {/* Buy me a Coffee Support Modal */}
-      <CoffeeModal
-        isOpen={showCoffeeModal}
-        onClose={() => setShowCoffeeModal(false)}
+      {/* Contact & Support Modal */}
+      <ContactModal
+        isOpen={showContactModal}
+        onClose={() => setShowContactModal(false)}
+        defaultTab={contactModalTab}
       />
     </div>
   );
