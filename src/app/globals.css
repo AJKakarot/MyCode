@@ -269,6 +269,7 @@ html, body {
   cursor: pointer;
   transition: all 0.2s ease;
   white-space: nowrap;
+  text-decoration: none !important;
 }
 
 .navbar-contact-btn:hover {
@@ -276,6 +277,7 @@ html, body {
   border-color: var(--accent-primary);
   color: var(--accent-primary);
   transform: translateY(-1px);
+  text-decoration: none !important;
 }
 
 .text-whatsapp {
