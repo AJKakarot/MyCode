@@ -278,13 +278,14 @@ html, body {
   color: #25d366;
 }
 
-.navbar-signin-btn {
+.navbar-signin-btn,
+.navbar-github-login-btn {
   display: flex;
   align-items: center;
-  gap: 6px;
-  background: var(--bg-surface);
-  border: 1px solid var(--border-color);
-  color: var(--text-primary);
+  gap: 7px;
+  background: #24292e;
+  border: 1px solid #444d56;
+  color: #f6f8fa;
   padding: 5px 12px;
   border-radius: var(--radius-sm);
   font-size: 0.78rem;
@@ -292,13 +293,20 @@ html, body {
   cursor: pointer;
   transition: all 0.2s ease;
   white-space: nowrap;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
 }
 
-.navbar-signin-btn:hover {
-  background: var(--bg-surface-hover);
-  border-color: var(--accent-primary);
-  color: var(--accent-primary);
+.navbar-signin-btn:hover,
+.navbar-github-login-btn:hover {
+  background: #2f363d;
+  border-color: #8b949e;
+  color: #ffffff;
   transform: translateY(-1px);
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.5);
+}
+
+.navbar-github-login-btn:active {
+  transform: translateY(0);
 }
 
 .navbar-user-group {
@@ -2081,6 +2089,13 @@ html, body {
 
   .navbar-whatsapp-btn {
     padding: 4px 7px;
+    font-size: 0.72rem;
+    gap: 4px;
+  }
+
+  .navbar-signin-btn,
+  .navbar-github-login-btn {
+    padding: 4px 8px;
     font-size: 0.72rem;
     gap: 4px;
   }

@@ -257,9 +257,9 @@ export default function Home() {
               </div>
             ) : isLoaded ? (
               <SignInButton mode="modal">
-                <button className="navbar-signin-btn" title="Sign In with GitHub">
-                  <GithubIcon size={14} />
-                  <span className="hide-on-mobile">Sign In</span>
+                <button className="navbar-github-login-btn" title="Sign In with GitHub">
+                  <GithubIcon size={16} />
+                  <span className="hide-on-mobile">GitHub Login</span>
                 </button>
               </SignInButton>
             ) : null}
