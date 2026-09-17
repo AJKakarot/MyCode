@@ -9,6 +9,7 @@ import CodeViewer from '@/components/CodeViewer';
 import MarkdownViewer from '@/components/MarkdownViewer';
 import ImageViewer from '@/components/ImageViewer';
 import SavedReposModal from '@/components/SavedReposModal';
+import CoffeeModal from '@/components/CoffeeModal';
 import {
   parseGitHubUrl,
   fetchRepoDetails,
@@ -29,6 +30,7 @@ import {
   Loader2,
   AlertTriangle,
   Bookmark,
+  Coffee,
 } from 'lucide-react';
 import { GithubIcon } from '@/components/GithubIcon';
 import { WhatsappIcon } from '@/components/WhatsappIcon';
@@ -51,6 +53,7 @@ export default function Home() {
   const [userToken, setUserToken] = useState<string | undefined>(undefined);
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const [showSavedModal, setShowSavedModal] = useState(false);
+  const [showCoffeeModal, setShowCoffeeModal] = useState(false);
   const [savedCount, setSavedCount] = useState(0);
 
   // Extract GitHub username if authenticated via GitHub
@@ -245,6 +248,17 @@ export default function Home() {
               <span className="hide-on-mobile">WhatsApp</span>
             </a>
 
+            {/* Buy me a Coffee Support Button */}
+            <button
+              type="button"
+              onClick={() => setShowCoffeeModal(true)}
+              className="navbar-coffee-btn"
+              title="Buy me a Coffee (₹20)"
+            >
+              <Coffee size={14} className="text-coffee" />
+              <span className="hide-on-mobile">Buy Coffee</span>
+            </button>
+
             {/* Clerk GitHub Auth */}
             {isLoaded && isSignedIn ? (
               <div className="navbar-user-group">
@@ -300,6 +314,17 @@ export default function Home() {
 
           {/* Footer */}
           <footer className="landing-footer">
+            <div className="footer-support-row">
+              <button
+                type="button"
+                onClick={() => setShowCoffeeModal(true)}
+                className="footer-coffee-pill"
+                title="Support GitCode with a Coffee"
+              >
+                <Coffee size={14} className="text-coffee" />
+                <span>Buy me a Coffee (₹20)</span>
+              </button>
+            </div>
             <p>
               Designed & Built by{' '}
               <a
@@ -403,6 +428,12 @@ export default function Home() {
         isOpen={showSavedModal}
         onClose={() => setShowSavedModal(false)}
         onSelectRepo={(url) => handleLoadRepo(url, userToken)}
+      />
+
+      {/* Buy me a Coffee Support Modal */}
+      <CoffeeModal
+        isOpen={showCoffeeModal}
+        onClose={() => setShowCoffeeModal(false)}
       />
     </div>
   );
