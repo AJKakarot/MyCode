@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect, useCallback } from 'react';
+import Link from 'next/link';
 import { SignInButton, UserButton, useUser } from '@clerk/nextjs';
 import RepoInput from '@/components/RepoInput';
 import RepoHeader from '@/components/RepoHeader';
@@ -9,7 +10,6 @@ import CodeViewer from '@/components/CodeViewer';
 import MarkdownViewer from '@/components/MarkdownViewer';
 import ImageViewer from '@/components/ImageViewer';
 import SavedReposModal from '@/components/SavedReposModal';
-import ContactModal from '@/components/ContactModal';
 import {
   parseGitHubUrl,
   fetchRepoDetails,
@@ -54,8 +54,6 @@ export default function Home() {
   const [userToken, setUserToken] = useState<string | undefined>(undefined);
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const [showSavedModal, setShowSavedModal] = useState(false);
-  const [showContactModal, setShowContactModal] = useState(false);
-  const [contactModalTab, setContactModalTab] = useState<'contact' | 'coffee'>('contact');
   const [savedCount, setSavedCount] = useState(0);
 
   // Extract GitHub username if authenticated via GitHub
@@ -243,19 +241,15 @@ export default function Home() {
               {savedCount > 0 && <span className="saved-badge-counter">{savedCount}</span>}
             </button>
 
-            {/* Contact & Support Button (WhatsApp + Coffee) */}
-            <button
-              type="button"
-              onClick={() => {
-                setContactModalTab('contact');
-                setShowContactModal(true);
-              }}
+            {/* Contact & Support Page Link */}
+            <Link
+              href="/contact"
               className="navbar-contact-btn"
               title="Contact on WhatsApp & Buy Coffee"
             >
               <MessageCircle size={14} className="text-accent" />
               <span className="hide-on-mobile">Contact</span>
-            </button>
+            </Link>
 
             {/* Clerk GitHub Auth */}
             {isLoaded && isSignedIn ? (
@@ -404,13 +398,6 @@ export default function Home() {
         isOpen={showSavedModal}
         onClose={() => setShowSavedModal(false)}
         onSelectRepo={(url) => handleLoadRepo(url, userToken)}
-      />
-
-      {/* Contact & Support Modal */}
-      <ContactModal
-        isOpen={showContactModal}
-        onClose={() => setShowContactModal(false)}
-        defaultTab={contactModalTab}
       />
     </div>
   );
