@@ -175,15 +175,24 @@ export default function ContactPage() {
                 </div>
               </div>
 
-              <a
-                href="upi://pay?pa=8840713812@upi&pn=Ajeet%20Gupta&cu=INR&tn=GitCode%20Coffee%20Support"
+              <button
+                type="button"
+                onClick={() => copyToClipboard(UPI_ID, 'primary-upi')}
                 className="contact-primary-coffee-btn"
-                title="Open UPI App to Pay"
+                title="Click to copy UPI ID (8840713812@upi)"
               >
-                <Coffee size={18} />
-                <span>Pay via UPI App (PhonePe / GPay / Paytm)</span>
-                <ExternalLink size={15} />
-              </a>
+                {copiedField === 'primary-upi' ? (
+                  <>
+                    <Check size={18} />
+                    <span>UPI ID Copied (8840713812@upi)!</span>
+                  </>
+                ) : (
+                  <>
+                    <Copy size={18} />
+                    <span>Copy UPI ID (8840713812@upi)</span>
+                  </>
+                )}
+              </button>
 
               {/* Details Card */}
               <div className="contact-details-card">
