@@ -7,6 +7,7 @@ import FileTree from '@/components/FileTree';
 import CodeViewer from '@/components/CodeViewer';
 import MarkdownViewer from '@/components/MarkdownViewer';
 import ImageViewer from '@/components/ImageViewer';
+import SavedReposModal from '@/components/SavedReposModal';
 import {
   parseGitHubUrl,
   fetchRepoDetails,
@@ -26,9 +27,11 @@ import {
   ArrowLeft,
   Loader2,
   AlertTriangle,
+  Bookmark,
 } from 'lucide-react';
 import { GithubIcon } from '@/components/GithubIcon';
 import InstallPrompt from '@/components/InstallPrompt';
+import { getSavedRepos } from '@/lib/savedRepos';
 
 export default function Home() {
   const [repoInfo, setRepoInfo] = useState<RepoInfo | null>(null);
@@ -44,6 +47,19 @@ export default function Home() {
   const [fileError, setFileError] = useState<string | null>(null);
   const [userToken, setUserToken] = useState<string | undefined>(undefined);
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+  const [showSavedModal, setShowSavedModal] = useState(false);
+  const [savedCount, setSavedCount] = useState(0);
+
+  useEffect(() => {
+    const updateCount = () => {
+      setSavedCount(getSavedRepos().length);
+    };
+    updateCount();
+    window.addEventListener('saved_repos_changed', updateCount);
+    return () => {
+      window.removeEventListener('saved_repos_changed', updateCount);
+    };
+  }, []);
 
   // Load a file from the repository
   const loadFile = useCallback(
@@ -186,6 +202,19 @@ export default function Home() {
                 </div>
               </div>
             )}
+
+            {/* Saved Repositories Button */}
+            <button
+              type="button"
+              onClick={() => setShowSavedModal(true)}
+              className="navbar-saved-btn"
+              title="View Saved Repositories"
+            >
+              <Bookmark size={14} className="text-accent" />
+              <span>Saved</span>
+              {savedCount > 0 && <span className="saved-badge-counter">{savedCount}</span>}
+            </button>
+
             <InstallPrompt />
           </div>
         </div>
@@ -214,6 +243,7 @@ export default function Home() {
               onLoadRepo={handleLoadRepo}
               isLoading={isLoadingRepo}
               error={error}
+              onOpenSavedModal={() => setShowSavedModal(true)}
             />
 
           </div>
@@ -306,6 +336,13 @@ export default function Home() {
           </div>
         </main>
       )}
+
+      {/* Saved Repositories Modal */}
+      <SavedReposModal
+        isOpen={showSavedModal}
+        onClose={() => setShowSavedModal(false)}
+        onSelectRepo={(url) => handleLoadRepo(url, userToken)}
+      />
     </div>
   );
 }

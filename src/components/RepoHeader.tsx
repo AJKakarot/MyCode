@@ -1,9 +1,24 @@
 'use client';
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { RepoInfo } from '@/lib/github';
-import { GitFork, Star, GitBranch, Lock, Globe, ExternalLink, RefreshCw, PanelLeftClose, PanelLeft } from 'lucide-react';
+import {
+  GitFork,
+  Star,
+  GitBranch,
+  Lock,
+  Globe,
+  ExternalLink,
+  RefreshCw,
+  PanelLeftClose,
+  PanelLeft,
+  Bookmark,
+  BookmarkCheck,
+  Copy,
+  Check,
+} from 'lucide-react';
 import { GithubIcon } from './GithubIcon';
+import { isRepoSaved, saveRepo, removeSavedRepo } from '@/lib/savedRepos';
 
 interface RepoHeaderProps {
   repo: RepoInfo;
@@ -22,6 +37,47 @@ export default function RepoHeader({
   isSidebarOpen = true,
   onToggleSidebar,
 }: RepoHeaderProps) {
+  const [saved, setSaved] = useState(false);
+  const [copied, setCopied] = useState(false);
+
+  useEffect(() => {
+    setSaved(isRepoSaved(repo.fullName));
+    const handleSavedChange = () => {
+      setSaved(isRepoSaved(repo.fullName));
+    };
+    window.addEventListener('saved_repos_changed', handleSavedChange);
+    return () => {
+      window.removeEventListener('saved_repos_changed', handleSavedChange);
+    };
+  }, [repo.fullName]);
+
+  const handleToggleSave = () => {
+    if (saved) {
+      removeSavedRepo(repo.fullName);
+      setSaved(false);
+    } else {
+      saveRepo(repo);
+      setSaved(true);
+    }
+  };
+
+  const handleCopyLink = async () => {
+    try {
+      await navigator.clipboard.writeText(repo.htmlUrl);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch {
+      const textArea = document.createElement('textarea');
+      textArea.value = repo.htmlUrl;
+      document.body.appendChild(textArea);
+      textArea.select();
+      document.execCommand('copy');
+      document.body.removeChild(textArea);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    }
+  };
+
   return (
     <div className="repo-header-container">
       <div className="repo-header-main">
@@ -68,6 +124,46 @@ export default function RepoHeader({
             <span>{repo.forks.toLocaleString()}</span>
           </div>
 
+          {/* Save / Bookmark Repo Button */}
+          <button
+            type="button"
+            onClick={handleToggleSave}
+            className={`action-btn ${saved ? 'repo-saved-active' : ''}`}
+            title={saved ? 'Repository is Saved (Click to unsave)' : 'Save / Bookmark Repository'}
+          >
+            {saved ? (
+              <>
+                <BookmarkCheck size={14} className="text-accent" />
+                <span>Saved</span>
+              </>
+            ) : (
+              <>
+                <Bookmark size={14} />
+                <span>Save Repo</span>
+              </>
+            )}
+          </button>
+
+          {/* Copy Link Button */}
+          <button
+            type="button"
+            onClick={handleCopyLink}
+            className={`action-btn ${copied ? 'copied' : ''}`}
+            title="Copy GitHub URL"
+          >
+            {copied ? (
+              <>
+                <Check size={14} className="text-success" />
+                <span className="text-success">Copied</span>
+              </>
+            ) : (
+              <>
+                <Copy size={14} />
+                <span className="hide-on-mobile">Copy Link</span>
+              </>
+            )}
+          </button>
+
           <button
             onClick={onRefresh}
             className="action-btn icon-only"
@@ -97,3 +193,4 @@ export default function RepoHeader({
     </div>
   );
 }
+
