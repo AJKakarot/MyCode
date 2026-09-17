@@ -2427,19 +2427,48 @@ html, body {
 
   .code-header-actions .action-btn {
     padding: 4px 6px;
-    min-width: 28px;
+    min-width: 26px;
+    height: 26px;
     justify-content: center;
   }
 
+  /* Compact Zoom Controls on Mobile */
+  .font-size-control-group {
+    height: 26px;
+    padding: 1px 2px;
+    gap: 1px;
+  }
+
+  .font-size-btn {
+    width: 20px;
+    height: 20px;
+  }
+
+  .font-size-val {
+    font-size: 0.68rem;
+    padding: 0 2px;
+  }
+
+  .code-body-wrapper {
+    -webkit-overflow-scrolling: touch;
+  }
+
   .code-line-numbers {
-    min-width: 32px;
-    padding: 12px 4px 12px 0;
-    font-size: 0.8rem;
+    min-width: 26px;
+    padding: 10px 4px 10px 2px;
+    font-size: 0.72rem;
   }
 
   .code-pre {
-    padding: 12px 10px;
-    font-size: 0.82rem;
+    padding: 10px 8px !important;
+    font-size: 0.78rem;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .code-pre.wrap-lines {
+    white-space: pre-wrap !important;
+    word-break: break-all !important;
+    overflow-wrap: anywhere !important;
   }
 
   .coffee-payment-details {

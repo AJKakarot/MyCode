@@ -44,7 +44,10 @@ export default function CodeViewer({ content, filePath, fileSize, rawUrl }: Code
       const saved = localStorage.getItem('gitcode_code_font_size');
       if (saved) {
         const num = Number(saved);
-        if (!isNaN(num) && num >= 10 && num <= 24) return num;
+        if (!isNaN(num) && num >= 8 && num <= 24) return num;
+      }
+      if (window.innerWidth < 768) {
+        return 11.5;
       }
     }
     return 13.5;
@@ -64,7 +67,7 @@ export default function CodeViewer({ content, filePath, fileSize, rawUrl }: Code
 
   const handleZoomIn = () => {
     setFontSize((prev) => {
-      const next = Math.min(24, prev + 1);
+      const next = Math.min(24, Math.round((prev + 1) * 2) / 2);
       if (typeof window !== 'undefined') {
         localStorage.setItem('gitcode_code_font_size', String(next));
       }
@@ -74,7 +77,7 @@ export default function CodeViewer({ content, filePath, fileSize, rawUrl }: Code
 
   const handleZoomOut = () => {
     setFontSize((prev) => {
-      const next = Math.max(10, prev - 1);
+      const next = Math.max(8, Math.round((prev - 1) * 2) / 2);
       if (typeof window !== 'undefined') {
         localStorage.setItem('gitcode_code_font_size', String(next));
       }
@@ -83,9 +86,10 @@ export default function CodeViewer({ content, filePath, fileSize, rawUrl }: Code
   };
 
   const handleResetZoom = () => {
-    setFontSize(13.5);
+    const defaultSize = typeof window !== 'undefined' && window.innerWidth < 768 ? 11.5 : 13.5;
+    setFontSize(defaultSize);
     if (typeof window !== 'undefined') {
-      localStorage.setItem('gitcode_code_font_size', '13.5');
+      localStorage.setItem('gitcode_code_font_size', String(defaultSize));
     }
   };
 
@@ -125,13 +129,13 @@ export default function CodeViewer({ content, filePath, fileSize, rawUrl }: Code
 
         <div className="code-header-actions">
           {/* Zoom / Font Size +/- Controls */}
-          <div className="font-size-control-group" title="Adjust code font size">
+          <div className="font-size-control-group" title="Adjust code font size for easy reading">
             <button
               type="button"
               onClick={handleZoomOut}
-              disabled={fontSize <= 10}
+              disabled={fontSize <= 8}
               className="font-size-btn"
-              title="Decrease font size (-)"
+              title="Decrease font size (-) to fit code on screen"
               aria-label="Decrease font size"
             >
               <Minus size={13} />
@@ -139,7 +143,7 @@ export default function CodeViewer({ content, filePath, fileSize, rawUrl }: Code
             <span
               className="font-size-val"
               onClick={handleResetZoom}
-              title="Click to reset font size (13.5px)"
+              title="Click to reset font size"
             >
               {fontSize}px
             </span>
@@ -158,7 +162,7 @@ export default function CodeViewer({ content, filePath, fileSize, rawUrl }: Code
           <button
             onClick={() => setWrapLines(!wrapLines)}
             className={`action-btn ${wrapLines ? 'active' : ''}`}
-            title="Toggle Line Wrap"
+            title="Toggle Line Wrap (Wrap code to screen width)"
           >
             <Layers size={14} />
             <span className="hide-on-mobile">Wrap</span>
