@@ -18,7 +18,7 @@ import { WhatsappIcon } from '@/components/WhatsappIcon';
 
 const PHONE_NUMBER = '+91 8840713812';
 const UPI_NUMBER = '8840713812';
-const UPI_ID = '8840713812@upi';
+const UPI_ID = 'gajeet031-1@okicici';
 
 export default function ContactPage() {
   const [activeTab, setActiveTab] = useState<'contact' | 'coffee'>('contact');
@@ -179,17 +179,17 @@ export default function ContactPage() {
                 type="button"
                 onClick={() => copyToClipboard(UPI_ID, 'primary-upi')}
                 className="contact-primary-coffee-btn"
-                title="Click to copy UPI ID (8840713812@upi)"
+                title={`Click to copy UPI ID (${UPI_ID})`}
               >
                 {copiedField === 'primary-upi' ? (
                   <>
                     <Check size={18} />
-                    <span>UPI ID Copied (8840713812@upi)!</span>
+                    <span>UPI ID Copied ({UPI_ID})!</span>
                   </>
                 ) : (
                   <>
                     <Copy size={18} />
-                    <span>Copy UPI ID (8840713812@upi)</span>
+                    <span>Copy UPI ID ({UPI_ID})</span>
                   </>
                 )}
               </button>
