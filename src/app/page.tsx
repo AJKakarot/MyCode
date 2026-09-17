@@ -36,7 +36,7 @@ import {
 import { GithubIcon } from '@/components/GithubIcon';
 import { WhatsappIcon } from '@/components/WhatsappIcon';
 import InstallPrompt from '@/components/InstallPrompt';
-import { getSavedRepos, syncCloudSavedRepos } from '@/lib/savedRepos';
+import { getSavedRepos, syncCloudSavedRepos, setAuthState } from '@/lib/savedRepos';
 
 export default function Home() {
   const { isLoaded, isSignedIn, user } = useUser();
@@ -80,10 +80,13 @@ export default function Home() {
 
   // Sync cloud saved repos with Neon DB when user signs in
   useEffect(() => {
+    setAuthState(!!isSignedIn);
     if (isSignedIn) {
       syncCloudSavedRepos().then((repos) => {
         setSavedCount(repos.length);
       });
+    } else {
+      setSavedCount(0);
     }
   }, [isSignedIn]);
 

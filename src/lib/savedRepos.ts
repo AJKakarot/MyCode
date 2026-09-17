@@ -14,136 +14,144 @@ export interface SavedRepo {
   savedAt: number;
 }
 
-const STORAGE_KEY = 'gitcode_saved_repos';
+// In-memory list for current session
+let memorySavedRepos: SavedRepo[] = [];
+let isAuthUser = false;
 
-export function getSavedRepos(): SavedRepo[] {
-  if (typeof window === 'undefined') return [];
-  try {
-    const raw = localStorage.getItem(STORAGE_KEY);
-    if (!raw) return [];
-    const parsed = JSON.parse(raw);
-    return Array.isArray(parsed) ? parsed : [];
-  } catch {
-    return [];
+const CLOUD_CACHE_KEY = 'gitcode_cloud_saved_repos';
+
+export function setAuthState(authenticated: boolean) {
+  isAuthUser = authenticated;
+  if (!authenticated && typeof window !== 'undefined') {
+    // Clear any local cache so nothing persists for unauthenticated users
+    localStorage.removeItem(CLOUD_CACHE_KEY);
+    localStorage.removeItem('gitcode_saved_repos');
+    memorySavedRepos = [];
+    window.dispatchEvent(new Event('saved_repos_changed'));
   }
 }
 
-export function saveRepo(repo: RepoInfo | Partial<SavedRepo> & { fullName: string }): SavedRepo[] {
+export function getSavedRepos(): SavedRepo[] {
   if (typeof window === 'undefined') return [];
-  try {
-    const current = getSavedRepos();
-    const existsIndex = current.findIndex(
-      (r) => r.fullName.toLowerCase() === repo.fullName.toLowerCase()
-    );
+  if (isAuthUser) {
+    try {
+      const raw = localStorage.getItem(CLOUD_CACHE_KEY);
+      if (raw) {
+        const parsed = JSON.parse(raw);
+        if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+      }
+    } catch {}
+  }
+  return memorySavedRepos;
+}
 
-    const parts = repo.fullName.split('/');
-    const owner = repo.owner || parts[0] || '';
-    const name = repo.name || parts[1] || repo.fullName;
+export function isRepoSaved(fullName: string): boolean {
+  const current = getSavedRepos();
+  return current.some((r) => r.fullName.toLowerCase() === fullName.toLowerCase());
+}
 
-    const newEntry: SavedRepo = {
-      fullName: repo.fullName,
-      owner,
-      name,
-      description: repo.description || null,
-      stars: repo.stars ?? 0,
-      forks: repo.forks ?? 0,
-      avatarUrl: repo.avatarUrl || `https://github.com/${owner}.png`,
-      htmlUrl: repo.htmlUrl || `https://github.com/${repo.fullName}`,
-      savedAt: Date.now(),
-    };
+export function saveRepo(repo: RepoInfo | Partial<SavedRepo> & { fullName: string }, authenticated?: boolean): SavedRepo[] {
+  const isAuth = authenticated !== undefined ? authenticated : isAuthUser;
+  const current = getSavedRepos();
+  const existsIndex = current.findIndex(
+    (r) => r.fullName.toLowerCase() === repo.fullName.toLowerCase()
+  );
 
-    let updated: SavedRepo[];
-    if (existsIndex >= 0) {
-      // Move to front and update details
-      updated = [newEntry, ...current.filter((_, idx) => idx !== existsIndex)];
-    } else {
-      updated = [newEntry, ...current];
-    }
+  const parts = repo.fullName.split('/');
+  const owner = repo.owner || parts[0] || '';
+  const name = repo.name || parts[1] || repo.fullName;
 
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
-    window.dispatchEvent(new Event('saved_repos_changed'));
+  const newEntry: SavedRepo = {
+    fullName: repo.fullName,
+    owner,
+    name,
+    description: repo.description || null,
+    stars: repo.stars ?? 0,
+    forks: repo.forks ?? 0,
+    avatarUrl: repo.avatarUrl || `https://github.com/${owner}.png`,
+    htmlUrl: repo.htmlUrl || `https://github.com/${repo.fullName}`,
+    savedAt: Date.now(),
+  };
 
-    // Save directly to Neon DB cloud via API
+  let updated: SavedRepo[];
+  if (existsIndex >= 0) {
+    updated = [newEntry, ...current.filter((_, idx) => idx !== existsIndex)];
+  } else {
+    updated = [newEntry, ...current];
+  }
+
+  memorySavedRepos = updated;
+
+  if (isAuth && typeof window !== 'undefined') {
+    // Save to local cache for instant UI
+    localStorage.setItem(CLOUD_CACHE_KEY, JSON.stringify(updated));
+    // Persist permanently in Neon DB
     fetch('/api/saved-repos', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(newEntry),
     }).catch((err) => {
-      console.warn('Could not sync save to Neon DB:', err);
+      console.warn('Could not save to Neon DB:', err);
     });
-
-    return updated;
-  } catch {
-    return getSavedRepos();
   }
+
+  if (typeof window !== 'undefined') {
+    window.dispatchEvent(new Event('saved_repos_changed'));
+  }
+
+  return updated;
 }
 
-export function removeSavedRepo(fullName: string): SavedRepo[] {
-  if (typeof window === 'undefined') return [];
-  try {
-    const current = getSavedRepos();
-    const updated = current.filter(
-      (r) => r.fullName.toLowerCase() !== fullName.toLowerCase()
-    );
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
-    window.dispatchEvent(new Event('saved_repos_changed'));
+export function removeSavedRepo(fullName: string, authenticated?: boolean): SavedRepo[] {
+  const isAuth = authenticated !== undefined ? authenticated : isAuthUser;
+  const current = getSavedRepos();
+  const updated = current.filter(
+    (r) => r.fullName.toLowerCase() !== fullName.toLowerCase()
+  );
 
-    // Remove directly from Neon DB cloud via API
+  memorySavedRepos = updated;
+
+  if (isAuth && typeof window !== 'undefined') {
+    localStorage.setItem(CLOUD_CACHE_KEY, JSON.stringify(updated));
+    // Remove permanently from Neon DB
     fetch(`/api/saved-repos?fullName=${encodeURIComponent(fullName)}`, {
       method: 'DELETE',
     }).catch((err) => {
-      console.warn('Could not sync delete to Neon DB:', err);
+      console.warn('Could not delete from Neon DB:', err);
     });
-
-    return updated;
-  } catch {
-    return getSavedRepos();
   }
-}
 
-export function isRepoSaved(fullName: string): boolean {
-  if (typeof window === 'undefined') return false;
-  const current = getSavedRepos();
-  return current.some((r) => r.fullName.toLowerCase() === fullName.toLowerCase());
+  if (typeof window !== 'undefined') {
+    window.dispatchEvent(new Event('saved_repos_changed'));
+  }
+
+  return updated;
 }
 
 /**
- * Syncs saved repos from Neon DB cloud with local storage
+ * Syncs saved repos from Neon DB cloud with local memory
  */
 export async function syncCloudSavedRepos(): Promise<SavedRepo[]> {
   if (typeof window === 'undefined') return [];
   try {
     const res = await fetch('/api/saved-repos', { cache: 'no-store' });
-    if (!res.ok) return getSavedRepos();
+    if (!res.ok) return [];
     const data = await res.json();
     if (data.authenticated && data.dbConfigured && Array.isArray(data.repos)) {
-      const local = getSavedRepos();
-      const map = new Map<string, SavedRepo>();
-
-      // Put cloud items first (Neon DB is source of truth)
-      for (const r of data.repos) {
-        map.set(r.fullName.toLowerCase(), r);
-      }
-      // Add local items if not already present and sync them up to Neon DB
-      for (const r of local) {
-        if (!map.has(r.fullName.toLowerCase())) {
-          map.set(r.fullName.toLowerCase(), r);
-          // Push local item to Neon DB cloud
-          fetch('/api/saved-repos', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(r),
-          }).catch(() => {});
-        }
-      }
-
-      const merged = Array.from(map.values());
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(merged));
+      isAuthUser = true;
+      memorySavedRepos = data.repos;
+      localStorage.setItem(CLOUD_CACHE_KEY, JSON.stringify(data.repos));
       window.dispatchEvent(new Event('saved_repos_changed'));
-      return merged;
+      return data.repos;
+    } else if (!data.authenticated) {
+      isAuthUser = false;
+      memorySavedRepos = [];
+      localStorage.removeItem(CLOUD_CACHE_KEY);
+      localStorage.removeItem('gitcode_saved_repos');
+      window.dispatchEvent(new Event('saved_repos_changed'));
     }
-    return getSavedRepos();
+    return memorySavedRepos;
   } catch {
-    return getSavedRepos();
+    return memorySavedRepos;
   }
 }

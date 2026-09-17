@@ -89,7 +89,7 @@ export default function SavedReposModal({
 
   const handleDelete = (fullName: string, e: React.MouseEvent) => {
     e.stopPropagation();
-    removeSavedRepo(fullName);
+    removeSavedRepo(fullName, isSignedIn);
   };
 
   const handleOpenRepo = (fullName: string) => {

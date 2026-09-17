@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import { useUser } from '@clerk/nextjs';
 import { RepoInfo } from '@/lib/github';
 import {
   GitFork,
@@ -37,6 +38,7 @@ export default function RepoHeader({
   isSidebarOpen = true,
   onToggleSidebar,
 }: RepoHeaderProps) {
+  const { isSignedIn } = useUser();
   const [saved, setSaved] = useState(false);
   const [copied, setCopied] = useState(false);
 
@@ -53,10 +55,10 @@ export default function RepoHeader({
 
   const handleToggleSave = () => {
     if (saved) {
-      removeSavedRepo(repo.fullName);
+      removeSavedRepo(repo.fullName, isSignedIn);
       setSaved(false);
     } else {
-      saveRepo(repo);
+      saveRepo(repo, isSignedIn);
       setSaved(true);
     }
   };
