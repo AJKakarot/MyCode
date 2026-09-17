@@ -12,7 +12,6 @@ import {
   ExternalLink,
   Phone,
   Globe,
-  Sparkles,
   CreditCard,
 } from 'lucide-react';
 import { WhatsappIcon } from '@/components/WhatsappIcon';
@@ -66,10 +65,6 @@ export default function ContactPage() {
         <div className="contact-page-card">
           {/* Header Banner */}
           <div className="contact-card-header">
-            <div className="contact-header-badge">
-              <Sparkles size={14} className="text-accent" />
-              <span>Direct Developer Assistance & Support</span>
-            </div>
             <h1>Contact & Support</h1>
             <p>Report issues, request features, or fuel GitCode development.</p>
           </div>
