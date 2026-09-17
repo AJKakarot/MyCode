@@ -34,9 +34,6 @@ interface RepoInputProps {
 const POPULAR_REPOS = [
   { label: 'facebook/react', url: 'facebook/react' },
   { label: 'vercel/next.js', url: 'vercel/next.js' },
-  { label: 'tailwindlabs/tailwindcss', url: 'tailwindlabs/tailwindcss' },
-  { label: 'shadcn-ui/ui', url: 'shadcn-ui/ui' },
-  { label: 'torvalds/subsurface-for-dirk', url: 'torvalds/subsurface-for-dirk' },
 ];
 
 export default function RepoInput({
