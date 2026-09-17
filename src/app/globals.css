@@ -218,13 +218,15 @@ html, body {
 }
 
 .navbar-saved-btn {
-  display: flex;
+  display: inline-flex;
   align-items: center;
   gap: 6px;
   background: rgba(129, 140, 248, 0.1);
   border: 1px solid rgba(129, 140, 248, 0.3);
   color: var(--text-primary);
-  padding: 5px 12px;
+  padding: 0 12px;
+  height: 32px;
+  box-sizing: border-box;
   border-radius: var(--radius-sm);
   font-size: 0.78rem;
   font-weight: 600;
@@ -252,13 +254,15 @@ html, body {
 }
 
 .navbar-whatsapp-btn {
-  display: flex;
+  display: inline-flex;
   align-items: center;
   gap: 6px;
   background: rgba(37, 211, 102, 0.12);
   border: 1px solid rgba(37, 211, 102, 0.35);
   color: #25d366;
-  padding: 5px 11px;
+  padding: 0 11px;
+  height: 32px;
+  box-sizing: border-box;
   border-radius: var(--radius-sm);
   font-size: 0.78rem;
   font-weight: 600;
@@ -279,13 +283,15 @@ html, body {
 }
 
 .navbar-coffee-btn {
-  display: flex;
+  display: inline-flex;
   align-items: center;
   gap: 6px;
   background: rgba(245, 158, 11, 0.12);
   border: 1px solid rgba(245, 158, 11, 0.35);
   color: #f59e0b;
-  padding: 5px 11px;
+  padding: 0 11px;
+  height: 32px;
+  box-sizing: border-box;
   border-radius: var(--radius-sm);
   font-size: 0.78rem;
   font-weight: 600;
@@ -306,13 +312,15 @@ html, body {
 
 .navbar-signin-btn,
 .navbar-github-login-btn {
-  display: flex;
+  display: inline-flex;
   align-items: center;
   gap: 7px;
   background: #24292e;
   border: 1px solid #444d56;
   color: #f6f8fa;
-  padding: 5px 12px;
+  padding: 0 12px;
+  height: 32px;
+  box-sizing: border-box;
   border-radius: var(--radius-sm);
   font-size: 0.78rem;
   font-weight: 600;
@@ -336,9 +344,10 @@ html, body {
 }
 
 .navbar-user-group {
-  display: flex;
+  display: inline-flex;
   align-items: center;
   gap: 8px;
+  height: 32px;
 }
 
 .navbar-github-handle {
@@ -2676,4 +2685,65 @@ html, body {
   color: var(--text-muted);
   text-align: center;
   margin-top: 4px;
+}
+
+/* ==========================================================================
+   Auth Pages (Sign In / Sign Up)
+   ========================================================================== */
+
+.auth-page-container {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: var(--bg-main);
+  background-image: 
+    radial-gradient(ellipse 80% 50% at 50% -20%, rgba(56, 189, 248, 0.12), transparent),
+    radial-gradient(ellipse 60% 40% at 50% 120%, rgba(129, 140, 248, 0.08), transparent);
+}
+
+.auth-header {
+  height: var(--navbar-height);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 24px;
+  border-bottom: 1px solid var(--border-color);
+  background: rgba(10, 13, 20, 0.8);
+  backdrop-filter: blur(12px);
+}
+
+.auth-brand-link {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  text-decoration: none;
+}
+
+.auth-back-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--text-secondary);
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-decoration: none;
+  padding: 5px 12px;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-sm);
+  transition: all 0.2s ease;
+}
+
+.auth-back-link:hover {
+  color: var(--text-primary);
+  border-color: var(--border-light);
+  background: var(--bg-surface-hover);
+}
+
+.auth-card-wrapper {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px 16px;
 }
