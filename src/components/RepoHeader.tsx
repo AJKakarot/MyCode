@@ -134,12 +134,12 @@ export default function RepoHeader({
             {saved ? (
               <>
                 <BookmarkCheck size={14} className="text-accent" />
-                <span>Saved</span>
+                <span className="hide-on-mobile">Saved</span>
               </>
             ) : (
               <>
                 <Bookmark size={14} />
-                <span>Save Repo</span>
+                <span className="hide-on-mobile">Save</span>
               </>
             )}
           </button>

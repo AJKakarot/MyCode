@@ -76,12 +76,12 @@ export default function CodeViewer({ content, filePath, fileSize, rawUrl }: Code
       {/* File Header Bar */}
       <div className="code-header">
         <div className="code-header-left">
-          <FileCode size={18} className="text-accent" />
-          <span className="file-path">{filePath}</span>
+          <FileCode size={16} className="text-accent flex-shrink-0" />
+          <span className="file-path" title={filePath}>{filePath}</span>
           <span className="file-meta-badge">{language.toUpperCase()}</span>
-          <span className="file-meta-badge">{lines.length} lines</span>
+          <span className="file-meta-badge hide-on-mobile">{lines.length} lines</span>
           {fileSize !== undefined && (
-            <span className="file-meta-badge">{formatBytes(fileSize)}</span>
+            <span className="file-meta-badge hide-on-mobile">{formatBytes(fileSize)}</span>
           )}
         </div>
 
@@ -91,8 +91,8 @@ export default function CodeViewer({ content, filePath, fileSize, rawUrl }: Code
             className={`action-btn ${wrapLines ? 'active' : ''}`}
             title="Toggle Line Wrap"
           >
-            <Layers size={15} />
-            <span>Wrap</span>
+            <Layers size={14} />
+            <span className="hide-on-mobile">Wrap</span>
           </button>
 
           <button
@@ -100,8 +100,8 @@ export default function CodeViewer({ content, filePath, fileSize, rawUrl }: Code
             className="action-btn"
             title="Copy Code"
           >
-            {copied ? <Check size={15} className="text-success" /> : <Copy size={15} />}
-            <span>{copied ? 'Copied!' : 'Copy'}</span>
+            {copied ? <Check size={14} className="text-success" /> : <Copy size={14} />}
+            <span className="hide-on-mobile">{copied ? 'Copied!' : 'Copy'}</span>
           </button>
 
           <button
@@ -109,8 +109,8 @@ export default function CodeViewer({ content, filePath, fileSize, rawUrl }: Code
             className="action-btn"
             title="Download file"
           >
-            <Download size={15} />
-            <span>Download</span>
+            <Download size={14} />
+            <span className="hide-on-mobile">Download</span>
           </button>
 
           {rawUrl && (
@@ -118,10 +118,10 @@ export default function CodeViewer({ content, filePath, fileSize, rawUrl }: Code
               href={rawUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="action-btn"
+              className="action-btn hide-on-mobile"
               title="Open raw GitHub file"
             >
-              <ExternalLink size={15} />
+              <ExternalLink size={14} />
               <span>Raw</span>
             </a>
           )}

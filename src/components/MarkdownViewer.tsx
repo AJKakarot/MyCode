@@ -68,16 +68,16 @@ export default function MarkdownViewer({ content, filePath, fileSize, rawUrl }: 
 
         <div className="code-header-actions">
           <button onClick={handleCopy} className="action-btn" title="Copy Markdown">
-            {copied ? <Check size={15} className="text-success" /> : <Copy size={15} />}
-            <span>{copied ? 'Copied!' : 'Copy'}</span>
+            {copied ? <Check size={14} className="text-success" /> : <Copy size={14} />}
+            <span className="hide-on-mobile">{copied ? 'Copied!' : 'Copy'}</span>
           </button>
           <button onClick={handleDownload} className="action-btn" title="Download">
-            <Download size={15} />
-            <span>Download</span>
+            <Download size={14} />
+            <span className="hide-on-mobile">Download</span>
           </button>
           {rawUrl && (
-            <a href={rawUrl} target="_blank" rel="noopener noreferrer" className="action-btn">
-              <ExternalLink size={15} />
+            <a href={rawUrl} target="_blank" rel="noopener noreferrer" className="action-btn hide-on-mobile">
+              <ExternalLink size={14} />
               <span>Raw</span>
             </a>
           )}

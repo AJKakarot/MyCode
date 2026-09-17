@@ -192,12 +192,12 @@ export default function Home() {
           <div className="navbar-right-actions">
             {repoInfo && (
               <div className="navbar-active-repo">
-                <button onClick={handleReset} className="back-home-btn" title="Back to Home">
-                  <ArrowLeft size={16} />
-                  <span>New Repo</span>
+                <button onClick={handleReset} className="back-home-btn" title="Explore New Repository">
+                  <ArrowLeft size={15} />
+                  <span>New</span>
                 </button>
-                <div className="navbar-repo-badge">
-                  <GithubIcon size={15} />
+                <div className="navbar-repo-badge hide-on-mobile">
+                  <GithubIcon size={14} />
                   <span>{repoInfo.fullName}</span>
                 </div>
               </div>
@@ -211,7 +211,7 @@ export default function Home() {
               title="View Saved Repositories"
             >
               <Bookmark size={14} className="text-accent" />
-              <span>Saved</span>
+              <span className="hide-on-mobile">Saved</span>
               {savedCount > 0 && <span className="saved-badge-counter">{savedCount}</span>}
             </button>
 

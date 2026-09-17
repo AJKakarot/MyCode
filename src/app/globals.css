@@ -1800,7 +1800,7 @@ html, body {
 
 @media (max-width: 768px) {
   :root {
-    --navbar-height: 50px;
+    --navbar-height: 48px;
   }
 
   .hide-on-mobile {
@@ -1808,35 +1808,88 @@ html, body {
   }
 
   .navbar-container {
-    padding: 0 10px;
+    padding: 0 8px;
+    gap: 6px;
   }
 
   .brand-icon-box {
-    width: 28px;
-    height: 28px;
+    width: 26px;
+    height: 26px;
     border-radius: 4px;
   }
 
   .brand-title {
-    font-size: 0.92rem;
+    font-size: 0.88rem;
   }
 
   .brand-subtitle {
     display: none;
   }
 
-  .navbar-saved-btn {
+  .navbar-right-actions {
+    gap: 5px;
+  }
+
+  .back-home-btn {
     padding: 4px 8px;
+    font-size: 0.74rem;
+    gap: 4px;
+  }
+
+  .navbar-saved-btn {
+    padding: 4px 7px;
     font-size: 0.72rem;
     gap: 4px;
   }
 
   .shortcut-install-btn {
-    padding: 4px 8px;
+    padding: 4px 7px;
     font-size: 0.72rem;
     gap: 4px;
   }
 
+  /* Repo Header on Mobile */
+  .repo-header-container {
+    padding: 6px 8px;
+    gap: 4px;
+  }
+
+  .repo-header-main {
+    gap: 6px;
+  }
+
+  .repo-avatar {
+    width: 22px;
+    height: 22px;
+  }
+
+  .repo-names {
+    font-size: 0.85rem;
+    max-width: 140px;
+  }
+
+  .repo-stats-actions {
+    gap: 4px;
+  }
+
+  .repo-stats-actions .action-btn {
+    padding: 4px 7px;
+    font-size: 0.74rem;
+  }
+
+  .repo-stat-chip {
+    padding: 3px 6px;
+    font-size: 0.7rem;
+  }
+
+  .branch-name {
+    max-width: 65px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  /* Saved Chips Section */
   .saved-chips-grid {
     gap: 6px;
   }
@@ -1865,6 +1918,7 @@ html, body {
     gap: 6px;
   }
 
+  /* Landing Screen on Mobile */
   .hero-landing-section {
     padding: 24px 16px 20px;
     overflow-y: auto;
@@ -1977,16 +2031,55 @@ html, body {
     padding: 14px 14px;
   }
 
+  /* Code Viewer Header on Mobile */
   .code-header {
     padding: 0 8px;
     height: 38px;
+    gap: 6px;
   }
 
-  .code-header-actions .action-btn span {
-    display: none;
+  .code-header-left {
+    gap: 6px;
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
+  }
+
+  .file-path {
+    font-size: 0.8rem;
+    font-weight: 600;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    flex: 1;
+    min-width: 0;
+  }
+
+  .file-meta-badge {
+    font-size: 0.68rem;
+    padding: 2px 5px;
+    flex-shrink: 0;
+  }
+
+  .code-header-actions {
+    gap: 4px;
+    flex-shrink: 0;
   }
 
   .code-header-actions .action-btn {
     padding: 4px 6px;
+    min-width: 28px;
+    justify-content: center;
+  }
+
+  .code-line-numbers {
+    min-width: 32px;
+    padding: 12px 4px 12px 0;
+    font-size: 0.8rem;
+  }
+
+  .code-pre {
+    padding: 12px 10px;
+    font-size: 0.82rem;
   }
 }
