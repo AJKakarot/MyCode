@@ -198,7 +198,7 @@ export default function RepoInput({
               type="text"
               placeholder={
                 githubUsername
-                  ? `Type your repo name (e.g. tcs) or owner/repo...`
+                  ? `Search your repos (e.g. portfolio, nextjs) or owner/repo...`
                   : `https://github.com/owner/repo or owner/repo...`
               }
               value={inputValue}
