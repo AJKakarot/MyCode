@@ -9,7 +9,6 @@ import {
   Copy,
   Check,
   Smartphone,
-  QrCode,
   ExternalLink,
   Phone,
   Globe,
@@ -25,11 +24,6 @@ const UPI_ID = '8840713812@upi';
 export default function ContactPage() {
   const [activeTab, setActiveTab] = useState<'contact' | 'coffee'>('contact');
   const [copiedField, setCopiedField] = useState<string | null>(null);
-  const [showQR, setShowQR] = useState(false);
-
-  const qrCodeUrl = `https://api.qrserver.com/v1/create-qr-code/?size=160x160&data=${encodeURIComponent(
-    `upi://pay?pa=${UPI_ID}&pn=Ajeet%20Gupta&cu=INR&tn=GitCode%20Coffee%20Support`
-  )}&bgcolor=10-15-22&color=f0-f6-fc`;
 
   const copyToClipboard = async (text: string, field: string) => {
     try {
@@ -181,7 +175,7 @@ export default function ContactPage() {
                 <div className="contact-hero-content">
                   <h4>Support GitCode Development</h4>
                   <p>
-                    Fuel further open-source updates and features by supporting via UPI or QR code.
+                    Fuel further open-source updates and features by supporting via UPI.
                   </p>
                 </div>
               </div>
@@ -231,40 +225,7 @@ export default function ContactPage() {
                     </button>
                   </div>
                 </div>
-
-                <div className="contact-detail-row">
-                  <div className="contact-detail-left">
-                    <QrCode size={15} className="text-coffee" />
-                    <span className="contact-detail-label">UPI QR Code</span>
-                  </div>
-                  <div className="contact-detail-right">
-                    <button
-                      type="button"
-                      onClick={() => setShowQR(!showQR)}
-                      className="contact-copy-btn"
-                    >
-                      <span>{showQR ? 'Hide QR' : 'Show QR'}</span>
-                    </button>
-                  </div>
-                </div>
               </div>
-
-              {/* Expandable QR Code if user clicks Show QR */}
-              {showQR && (
-                <div className="coffee-qr-popup">
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img
-                    src={qrCodeUrl}
-                    alt="Scan UPI QR Code"
-                    className="coffee-qr-img"
-                    width={140}
-                    height={140}
-                  />
-                  <span className="coffee-qr-label">
-                    <QrCode size={12} /> Scan with any UPI app (GPay / PhonePe / Paytm / BHIM)
-                  </span>
-                </div>
-              )}
             </div>
           )}
         </div>
