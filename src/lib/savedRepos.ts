@@ -63,13 +63,13 @@ export function saveRepo(repo: RepoInfo | Partial<SavedRepo> & { fullName: strin
     localStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
     window.dispatchEvent(new Event('saved_repos_changed'));
 
-    // Asynchronously sync to Neon DB via API if logged in
+    // Save directly to Neon DB cloud via API
     fetch('/api/saved-repos', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(newEntry),
-    }).catch(() => {
-      // Gracefully ignore if offline or not logged in
+    }).catch((err) => {
+      console.warn('Could not sync save to Neon DB:', err);
     });
 
     return updated;
@@ -88,11 +88,11 @@ export function removeSavedRepo(fullName: string): SavedRepo[] {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
     window.dispatchEvent(new Event('saved_repos_changed'));
 
-    // Asynchronously sync delete to Neon DB via API if logged in
+    // Remove directly from Neon DB cloud via API
     fetch(`/api/saved-repos?fullName=${encodeURIComponent(fullName)}`, {
       method: 'DELETE',
-    }).catch(() => {
-      // Gracefully ignore
+    }).catch((err) => {
+      console.warn('Could not sync delete to Neon DB:', err);
     });
 
     return updated;
@@ -113,22 +113,22 @@ export function isRepoSaved(fullName: string): boolean {
 export async function syncCloudSavedRepos(): Promise<SavedRepo[]> {
   if (typeof window === 'undefined') return [];
   try {
-    const res = await fetch('/api/saved-repos');
+    const res = await fetch('/api/saved-repos', { cache: 'no-store' });
     if (!res.ok) return getSavedRepos();
     const data = await res.json();
-    if (data.authenticated && Array.isArray(data.repos) && data.repos.length > 0) {
+    if (data.authenticated && data.dbConfigured && Array.isArray(data.repos)) {
       const local = getSavedRepos();
       const map = new Map<string, SavedRepo>();
 
-      // Put cloud items first
+      // Put cloud items first (Neon DB is source of truth)
       for (const r of data.repos) {
         map.set(r.fullName.toLowerCase(), r);
       }
-      // Add local items if not already present
+      // Add local items if not already present and sync them up to Neon DB
       for (const r of local) {
         if (!map.has(r.fullName.toLowerCase())) {
           map.set(r.fullName.toLowerCase(), r);
-          // Also push local item to cloud
+          // Push local item to Neon DB cloud
           fetch('/api/saved-repos', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },

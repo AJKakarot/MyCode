@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
+import { useUser } from '@clerk/nextjs';
 import {
   Bookmark,
   X,
@@ -14,8 +15,9 @@ import {
   GitFork,
   ArrowRight,
   FolderGit2,
+  Cloud,
 } from 'lucide-react';
-import { SavedRepo, getSavedRepos, removeSavedRepo } from '@/lib/savedRepos';
+import { SavedRepo, getSavedRepos, removeSavedRepo, syncCloudSavedRepos } from '@/lib/savedRepos';
 
 interface SavedReposModalProps {
   isOpen: boolean;
@@ -28,10 +30,12 @@ export default function SavedReposModal({
   onClose,
   onSelectRepo,
 }: SavedReposModalProps) {
+  const { isSignedIn } = useUser();
   const [savedRepos, setSavedRepos] = useState<SavedRepo[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [copiedRepo, setCopiedRepo] = useState<string | null>(null);
   const [mounted, setMounted] = useState(false);
+  const [isSyncing, setIsSyncing] = useState(false);
 
   useEffect(() => {
     setMounted(true);
@@ -45,6 +49,20 @@ export default function SavedReposModal({
       window.removeEventListener('saved_repos_changed', load);
     };
   }, []);
+
+  // When modal is opened, sync fresh from Neon DB
+  useEffect(() => {
+    if (isOpen && isSignedIn) {
+      setIsSyncing(true);
+      syncCloudSavedRepos()
+        .then((repos) => {
+          setSavedRepos(repos);
+        })
+        .finally(() => {
+          setIsSyncing(false);
+        });
+    }
+  }, [isOpen, isSignedIn]);
 
   const handleCopyLink = async (repo: SavedRepo, e: React.MouseEvent) => {
     e.stopPropagation();
@@ -100,6 +118,12 @@ export default function SavedReposModal({
               <h3 className="saved-modal-title">Saved Repositories</h3>
               <p className="saved-modal-subtitle">
                 {savedRepos.length} {savedRepos.length === 1 ? 'repository' : 'repositories'} saved
+                {isSignedIn && (
+                  <span className="saved-cloud-badge">
+                    <Cloud size={11} className="text-accent" />
+                    {isSyncing ? 'Syncing with Neon DB...' : 'Neon DB Synced'}
+                  </span>
+                )}
               </p>
             </div>
           </div>
@@ -253,7 +277,9 @@ export default function SavedReposModal({
         {/* Footer */}
         <div className="saved-modal-footer">
           <span className="saved-footer-tip">
-            Saved repositories are stored locally on this device.
+            {isSignedIn
+              ? '☁️ Saved repositories are saved to your Neon Database account.'
+              : '💡 Sign in with GitHub to save & sync repositories in Neon Database.'}
           </span>
           <button onClick={onClose} className="modal-done-btn">
             Done
