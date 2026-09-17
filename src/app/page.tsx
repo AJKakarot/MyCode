@@ -59,8 +59,13 @@ export default function Home() {
   const [savedCount, setSavedCount] = useState(0);
 
   // Extract GitHub username if authenticated via GitHub
+  const githubAccount = user?.externalAccounts?.find(
+    (acc) =>
+      acc.provider === 'github' ||
+      acc.verification?.strategy === 'oauth_github'
+  );
   const githubUsername =
-    user?.externalAccounts?.find((acc) => acc.provider === 'github')?.username ||
+    githubAccount?.username ||
     user?.username ||
     null;
 

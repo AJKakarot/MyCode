@@ -80,17 +80,15 @@ export default function RepoInput({
 
   // Fetch logged in user's GitHub repositories for autocomplete suggestions
   useEffect(() => {
-    if (!githubUsername) {
-      setUserRepos([]);
-      return;
-    }
-
     async function fetchUserRepos() {
       try {
-        const res = await fetch(`/api/user-repos?username=${encodeURIComponent(githubUsername || '')}`);
+        const url = githubUsername
+          ? `/api/user-repos?username=${encodeURIComponent(githubUsername)}`
+          : `/api/user-repos`;
+        const res = await fetch(url);
         if (res.ok) {
           const data = await res.json();
-          if (Array.isArray(data.repos)) {
+          if (Array.isArray(data.repos) && data.repos.length > 0) {
             setUserRepos(data.repos);
           }
         }
@@ -115,15 +113,18 @@ export default function RepoInput({
     };
   }, []);
 
-  // Filter user's repos based on what is typed
+  // Filter user's repos based on what is typed (or show recent repos when focused)
   const trimmed = inputValue.trim().toLowerCase();
-  const matchingSuggestions = userRepos.filter((r) => {
-    if (!trimmed) return false;
-    return (
-      r.name.toLowerCase().includes(trimmed) ||
-      r.fullName.toLowerCase().includes(trimmed)
-    );
-  });
+  const matchingSuggestions = userRepos
+    .filter((r) => {
+      if (!trimmed) return true;
+      return (
+        r.name.toLowerCase().includes(trimmed) ||
+        r.fullName.toLowerCase().includes(trimmed) ||
+        (r.description && r.description.toLowerCase().includes(trimmed))
+      );
+    })
+    .slice(0, 10);
 
   const handleSubmit = (e?: React.FormEvent) => {
     if (e) e.preventDefault();
@@ -231,7 +232,10 @@ export default function RepoInput({
                 setSelectedIndex(-1);
               }}
               onFocus={() => {
-                if (inputValue.trim()) setShowSuggestions(true);
+                if (userRepos.length > 0) setShowSuggestions(true);
+              }}
+              onClick={() => {
+                if (userRepos.length > 0) setShowSuggestions(true);
               }}
               onKeyDown={handleKeyDown}
               className="repo-text-input"
