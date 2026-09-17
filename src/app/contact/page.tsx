@@ -6,24 +6,23 @@ import {
   Code2,
   ArrowLeft,
   Coffee,
-  MessageCircle,
   Copy,
   Check,
   Smartphone,
   QrCode,
-  Heart,
   ExternalLink,
   Phone,
   Globe,
   Sparkles,
+  CreditCard,
 } from 'lucide-react';
 import { WhatsappIcon } from '@/components/WhatsappIcon';
 
 const AMOUNTS = [
   { value: '20', label: '₹20', icon: '☕', name: 'Coffee' },
   { value: '50', label: '₹50', icon: '🥤', name: 'Cold Drink' },
-  { value: '100', label: '₹100', icon: '🍕', name: 'Pizza Treat' },
-  { value: '200', label: '🚀 Super Dev', icon: '🚀', name: 'Super Dev' },
+  { value: '100', label: '🍕 ₹100', icon: '🍕', name: 'Pizza' },
+  { value: '200', label: '🚀 ₹200', icon: '🚀', name: 'Super Dev' },
 ];
 
 const PHONE_NUMBER = '+91 8840713812';
@@ -34,6 +33,7 @@ export default function ContactPage() {
   const [activeTab, setActiveTab] = useState<'contact' | 'coffee'>('contact');
   const [selectedAmount, setSelectedAmount] = useState('20');
   const [copiedField, setCopiedField] = useState<string | null>(null);
+  const [showQR, setShowQR] = useState(false);
 
   const upiIntentUrl = `upi://pay?pa=${UPI_ID}&pn=Ajeet%20Gupta&am=${selectedAmount}&cu=INR&tn=GitCode%20Coffee%20Support`;
   const qrCodeUrl = `https://api.qrserver.com/v1/create-qr-code/?size=160x160&data=${encodeURIComponent(
@@ -177,56 +177,116 @@ export default function ContactPage() {
                   </div>
                 </div>
               </div>
-
-              <div
-                className="contact-switch-prompt"
-                onClick={() => setActiveTab('coffee')}
-              >
-                <Coffee size={15} className="text-coffee" />
-                <span>
-                  Like GitCode? Support development with a <strong>₹20 Coffee treat</strong> →
-                </span>
-              </div>
             </div>
           )}
 
-          {/* Tab 2: Buy a Coffee */}
+          {/* Tab 2: Buy a Coffee (Same height and card structure as WhatsApp tab) */}
           {activeTab === 'coffee' && (
             <div className="contact-tab-content">
-              <p className="coffee-intro-text">
-                GitCode is 100% free and open. If it saves your time reading and exploring code, consider fueling further updates with a small contribution! 💙
-              </p>
+              <div className="contact-hero-card coffee-hero">
+                <div className="contact-hero-icon-box coffee-hero-icon">
+                  <Coffee size={30} />
+                </div>
+                <div className="contact-hero-content">
+                  <h4>Support GitCode Development</h4>
+                  <p>
+                    Fuel further open-source updates with a small contribution (₹20, ₹50, ₹100, ₹200).
+                  </p>
+                </div>
+              </div>
 
-              {/* Amount Grid */}
-              <div className="coffee-amount-grid">
+              {/* Amount Selection Selector Bar */}
+              <div className="coffee-amount-pill-group">
                 {AMOUNTS.map((item) => (
                   <button
                     key={item.value}
                     type="button"
-                    className={`coffee-amount-card ${selectedAmount === item.value ? 'selected' : ''}`}
+                    className={`coffee-amount-pill ${selectedAmount === item.value ? 'selected' : ''}`}
                     onClick={() => setSelectedAmount(item.value)}
                   >
-                    <span className="coffee-card-emoji">{item.icon}</span>
-                    <span className="coffee-card-value">{item.label}</span>
-                    <span className="coffee-card-name">{item.name}</span>
+                    <span>{item.icon}</span>
+                    <span>₹{item.value}</span>
                   </button>
                 ))}
               </div>
 
-              {/* Mobile UPI Pay Button */}
+              {/* Primary Mobile Pay Button */}
               <a
                 href={upiIntentUrl}
-                className="coffee-pay-upi-btn"
+                className="contact-primary-coffee-btn"
                 title="Pay via UPI App (PhonePe / GPay / Paytm)"
               >
-                <Smartphone size={16} />
-                <span>Pay ₹{selectedAmount} via UPI App (PhonePe / GPay / Paytm)</span>
-                <ExternalLink size={14} />
+                <Smartphone size={18} />
+                <span>Pay ₹{selectedAmount} via UPI (PhonePe / GPay / Paytm)</span>
+                <ExternalLink size={15} />
               </a>
 
-              {/* QR & Details */}
-              <div className="coffee-payment-details">
-                <div className="coffee-qr-wrapper">
+              {/* Details Card */}
+              <div className="contact-details-card">
+                <div className="contact-detail-row">
+                  <div className="contact-detail-left">
+                    <CreditCard size={15} className="text-coffee" />
+                    <span className="contact-detail-label">UPI Number</span>
+                  </div>
+                  <div className="contact-detail-right">
+                    <span className="contact-detail-val">{UPI_NUMBER}</span>
+                    <button
+                      type="button"
+                      onClick={() => copyToClipboard(UPI_NUMBER, 'number')}
+                      className="contact-copy-btn"
+                    >
+                      {copiedField === 'number' ? (
+                        <Check size={12} className="text-success" />
+                      ) : (
+                        <Copy size={12} />
+                      )}
+                      <span>{copiedField === 'number' ? 'Copied' : 'Copy'}</span>
+                    </button>
+                  </div>
+                </div>
+
+                <div className="contact-detail-row">
+                  <div className="contact-detail-left">
+                    <Sparkles size={15} className="text-coffee" />
+                    <span className="contact-detail-label">UPI ID</span>
+                  </div>
+                  <div className="contact-detail-right">
+                    <span className="contact-detail-val">{UPI_ID}</span>
+                    <button
+                      type="button"
+                      onClick={() => copyToClipboard(UPI_ID, 'upi')}
+                      className="contact-copy-btn"
+                    >
+                      {copiedField === 'upi' ? (
+                        <Check size={12} className="text-success" />
+                      ) : (
+                        <Copy size={12} />
+                      )}
+                      <span>{copiedField === 'upi' ? 'Copied' : 'Copy'}</span>
+                    </button>
+                  </div>
+                </div>
+
+                <div className="contact-detail-row">
+                  <div className="contact-detail-left">
+                    <QrCode size={15} className="text-coffee" />
+                    <span className="contact-detail-label">QR Code (Desktop Scan)</span>
+                  </div>
+                  <div className="contact-detail-right">
+                    <button
+                      type="button"
+                      onClick={() => setShowQR(!showQR)}
+                      className="contact-copy-btn"
+                    >
+                      <span>{showQR ? 'Hide QR' : 'Show QR'}</span>
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              {/* Expandable QR Code if user clicks Show QR */}
+              {showQR && (
+                <div className="coffee-qr-popup">
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img
                     src={qrCodeUrl}
@@ -236,65 +296,10 @@ export default function ContactPage() {
                     height={130}
                   />
                   <span className="coffee-qr-label">
-                    <QrCode size={12} /> Scan with any UPI app
+                    <QrCode size={12} /> Scan with any UPI app (GPay / PhonePe / Paytm)
                   </span>
                 </div>
-
-                <div className="coffee-manual-info">
-                  <div className="coffee-info-item">
-                    <span className="coffee-info-label">UPI Mobile / Number</span>
-                    <div className="coffee-copy-row">
-                      <span className="coffee-info-val">{UPI_NUMBER}</span>
-                      <button
-                        type="button"
-                        onClick={() => copyToClipboard(UPI_NUMBER, 'number')}
-                        className="coffee-copy-btn"
-                      >
-                        {copiedField === 'number' ? (
-                          <Check size={13} className="text-success" />
-                        ) : (
-                          <Copy size={13} />
-                        )}
-                        <span>{copiedField === 'number' ? 'Copied' : 'Copy'}</span>
-                      </button>
-                    </div>
-                  </div>
-
-                  <div className="coffee-info-item">
-                    <span className="coffee-info-label">UPI ID</span>
-                    <div className="coffee-copy-row">
-                      <span className="coffee-info-val">{UPI_ID}</span>
-                      <button
-                        type="button"
-                        onClick={() => copyToClipboard(UPI_ID, 'upi')}
-                        className="coffee-copy-btn"
-                      >
-                        {copiedField === 'upi' ? (
-                          <Check size={13} className="text-success" />
-                        ) : (
-                          <Copy size={13} />
-                        )}
-                        <span>{copiedField === 'upi' ? 'Copied' : 'Copy'}</span>
-                      </button>
-                    </div>
-                  </div>
-
-                  <a
-                    href={`https://wa.me/918840713812?text=Hi%20Ajeet,%20I%20supported%20GitCode%20with%20%E2%82%B9${selectedAmount}!`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="coffee-wa-btn"
-                  >
-                    <WhatsappIcon size={14} className="text-whatsapp" />
-                    <span>Message Ajeet on WhatsApp</span>
-                  </a>
-                </div>
-              </div>
-
-              <div className="coffee-footer-note">
-                <Heart size={13} className="text-danger" />
-                <span>Thank you for your generous support!</span>
-              </div>
+              )}
             </div>
           )}
         </div>
