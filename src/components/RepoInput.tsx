@@ -50,7 +50,7 @@ export default function RepoInput({ onLoadRepo, isLoading, error, initialValue =
       <form onSubmit={handleSubmit} className="repo-input-form">
         <div className="input-group-main">
           <div className="input-icon-wrapper">
-            <GithubIcon size={20} className="github-icon" />
+            <GithubIcon size={22} className="github-icon" />
           </div>
 
           <input
@@ -74,7 +74,7 @@ export default function RepoInput({ onLoadRepo, isLoading, error, initialValue =
               <span className="btn-spinner"></span>
             ) : (
               <>
-                <Search size={16} />
+                <Search size={18} />
                 <span>Explore Code</span>
               </>
             )}

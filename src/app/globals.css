@@ -242,14 +242,24 @@ html, body {
 /* Install Modal Dialog */
 .install-modal-overlay {
   position: fixed;
-  inset: 0;
-  background: rgba(0, 0, 0, 0.75);
-  backdrop-filter: blur(8px);
-  z-index: 100;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  width: 100vw;
+  height: 100vh;
+  height: 100dvh;
+  background: rgba(0, 0, 0, 0.8);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  z-index: 99999;
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 16px;
+  padding: max(16px, env(safe-area-inset-top, 16px)) 16px max(16px, env(safe-area-inset-bottom, 16px));
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
   animation: fadeIn 0.2s ease;
 }
 
@@ -258,12 +268,16 @@ html, body {
   border: 1px solid var(--border-color);
   border-radius: var(--radius-lg);
   width: 100%;
-  max-width: 440px;
-  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.8);
+  max-width: 420px;
+  max-height: min(88dvh, 580px);
+  margin: auto;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.85);
   display: flex;
   flex-direction: column;
   overflow: hidden;
-  animation: slideUp 0.25s ease;
+  animation: slideUp 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  position: relative;
+  flex-shrink: 0;
 }
 
 @keyframes fadeIn {
@@ -272,16 +286,18 @@ html, body {
 }
 
 @keyframes slideUp {
-  from { transform: translateY(16px); opacity: 0; }
-  to { transform: translateY(0); opacity: 1; }
+  from { transform: translateY(16px) scale(0.98); opacity: 0; }
+  to { transform: translateY(0) scale(1); opacity: 1; }
 }
 
 .install-modal-header {
-  padding: 16px 20px;
+  padding: 14px 18px;
   border-bottom: 1px solid var(--border-color);
   display: flex;
   align-items: center;
   justify-content: space-between;
+  flex-shrink: 0;
+  background: var(--bg-secondary);
 }
 
 .modal-title-group {
@@ -291,7 +307,7 @@ html, body {
 }
 
 .modal-title-group h3 {
-  font-size: 1rem;
+  font-size: 0.95rem;
   font-weight: 700;
   color: var(--text-primary);
 }
@@ -301,11 +317,12 @@ html, body {
   border: none;
   color: var(--text-muted);
   cursor: pointer;
-  padding: 4px;
-  border-radius: 4px;
+  padding: 6px;
+  border-radius: var(--radius-sm);
   display: flex;
   align-items: center;
   justify-content: center;
+  transition: all 0.15s ease;
 }
 
 .modal-close-btn:hover {
@@ -314,52 +331,59 @@ html, body {
 }
 
 .install-modal-body {
-  padding: 20px;
+  padding: 16px 18px;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+  flex: 1;
+  min-height: 0;
 }
 
 .instruction-lead {
-  font-size: 0.9rem;
+  font-size: 0.85rem;
   color: var(--text-secondary);
-  margin-bottom: 16px;
+  margin-bottom: 14px;
+  line-height: 1.4;
 }
 
 .steps-list {
   list-style: none;
   display: flex;
   flex-direction: column;
-  gap: 14px;
+  gap: 12px;
 }
 
 .step-item {
   display: flex;
   align-items: flex-start;
-  gap: 12px;
+  gap: 10px;
 }
 
 .step-num {
-  width: 24px;
-  height: 24px;
+  width: 22px;
+  height: 22px;
   border-radius: 50%;
   background: rgba(56, 189, 248, 0.15);
   border: 1px solid var(--accent-primary);
   color: var(--accent-primary);
-  font-size: 0.8rem;
+  font-size: 0.75rem;
   font-weight: 700;
   display: flex;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
+  margin-top: 1px;
 }
 
 .step-content {
-  font-size: 0.88rem;
+  font-size: 0.84rem;
   color: var(--text-primary);
-  line-height: 1.4;
+  line-height: 1.45;
   flex: 1;
 }
 
 .step-visual {
-  margin-top: 6px;
+  margin-top: 5px;
   display: inline-flex;
   align-items: center;
   gap: 6px;
@@ -367,16 +391,17 @@ html, body {
   border: 1px solid var(--border-color);
   padding: 4px 10px;
   border-radius: var(--radius-sm);
-  font-size: 0.78rem;
+  font-size: 0.76rem;
   color: var(--text-secondary);
 }
 
 .install-modal-footer {
-  padding: 12px 20px;
+  padding: 12px 18px;
   border-top: 1px solid var(--border-color);
   display: flex;
   justify-content: flex-end;
   background: var(--bg-surface);
+  flex-shrink: 0;
 }
 
 .modal-done-btn {
@@ -399,7 +424,7 @@ html, body {
 }
 
 /* ==========================================================================
-   Hero Landing Section (No Scroll, Perfectly Centered)
+   Hero Landing Section (Scrollable & Responsive)
    ========================================================================== */
 
 .hero-landing-section {
@@ -408,52 +433,56 @@ html, body {
   flex-direction: column;
   justify-content: space-between;
   align-items: center;
-  padding: 24px 16px 12px;
+  padding: 36px 20px 24px;
   background:
-    radial-gradient(ellipse 70% 50% at 50% 10%, rgba(56, 189, 248, 0.12), transparent 75%),
-    radial-gradient(ellipse 50% 40% at 80% 90%, rgba(129, 140, 248, 0.08), transparent 75%);
-  overflow: hidden;
+    radial-gradient(ellipse 70% 50% at 50% 10%, rgba(56, 189, 248, 0.14), transparent 75%),
+    radial-gradient(ellipse 50% 40% at 80% 90%, rgba(129, 140, 248, 0.09), transparent 75%);
+  overflow-y: auto;
+  overflow-x: hidden;
+  -webkit-overflow-scrolling: touch;
+  min-height: 0;
 }
 
 .hero-content {
   width: 100%;
-  max-width: 760px;
+  max-width: 800px;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   text-align: center;
   margin: auto 0;
+  padding: 20px 0;
 }
 
 .hero-badge {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
-  padding: 4px 14px;
+  gap: 8px;
+  padding: 6px 16px;
   background: rgba(30, 41, 59, 0.7);
   border: 1px solid rgba(56, 189, 248, 0.3);
   border-radius: 9999px;
-  font-size: 0.76rem;
+  font-size: 0.82rem;
   font-weight: 600;
   color: var(--text-secondary);
-  margin-bottom: 16px;
+  margin-bottom: 20px;
 }
 
 .hero-title {
-  font-size: clamp(1.8rem, 4.5vw, 3rem);
+  font-size: clamp(2rem, 5vw, 3.25rem);
   font-weight: 800;
   letter-spacing: -0.03em;
-  line-height: 1.15;
-  margin-bottom: 14px;
+  line-height: 1.18;
+  margin-bottom: 16px;
 }
 
 .hero-description {
-  font-size: clamp(0.85rem, 1.8vw, 1.05rem);
+  font-size: clamp(0.92rem, 2vw, 1.1rem);
   color: var(--text-secondary);
-  max-width: 580px;
-  margin-bottom: 24px;
-  line-height: 1.5;
+  max-width: 620px;
+  margin-bottom: 30px;
+  line-height: 1.6;
 }
 
 /* ==========================================================================
@@ -462,13 +491,13 @@ html, body {
 
 .repo-input-wrapper {
   width: 100%;
-  max-width: 680px;
+  max-width: 720px;
 }
 
 .repo-input-form {
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 12px;
 }
 
 .input-group-main {
@@ -476,24 +505,24 @@ html, body {
   display: flex;
   align-items: center;
   background: var(--bg-surface);
-  border: 1px solid var(--border-color);
-  border-radius: var(--radius-lg);
-  padding: 5px 6px 5px 14px;
-  box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.6);
+  border: 1.5px solid var(--border-color);
+  border-radius: var(--radius-xl);
+  padding: 7px 8px 7px 18px;
+  box-shadow: 0 14px 40px -10px rgba(0, 0, 0, 0.7), 0 0 0 1px rgba(255, 255, 255, 0.04);
   transition: all 0.25s ease;
   width: 100%;
 }
 
 .input-group-main:focus-within {
   border-color: var(--accent-primary);
-  box-shadow: 0 0 0 3px var(--accent-glow), 0 12px 36px -10px rgba(0, 0, 0, 0.8);
+  box-shadow: 0 0 0 3px var(--accent-glow), 0 16px 44px -10px rgba(0, 0, 0, 0.85);
 }
 
 .input-icon-wrapper {
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-right: 10px;
+  margin-right: 12px;
   color: var(--text-muted);
   flex-shrink: 0;
 }
@@ -504,28 +533,28 @@ html, body {
   background: transparent;
   border: none;
   outline: none;
-  font-size: 0.95rem;
+  font-size: 1.05rem;
   color: var(--text-primary);
   font-family: var(--font-sans);
-  padding: 8px 0;
+  padding: 10px 4px;
 }
 
 .repo-text-input::placeholder {
   color: #64748b;
-  font-size: 0.88rem;
+  font-size: 0.95rem;
   font-family: var(--font-sans);
 }
 
 .repo-submit-btn {
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 8px;
   background: linear-gradient(135deg, #0284c7 0%, #4f46e5 100%);
   color: #ffffff;
   border: none;
-  border-radius: var(--radius-md);
-  padding: 10px 18px;
-  font-size: 0.88rem;
+  border-radius: var(--radius-lg);
+  padding: 12px 24px;
+  font-size: 0.95rem;
   font-weight: 600;
   cursor: pointer;
   transition: all 0.2s ease;
@@ -534,9 +563,9 @@ html, body {
 }
 
 .repo-submit-btn:hover:not(:disabled) {
-  opacity: 0.92;
+  opacity: 0.94;
   transform: translateY(-1px);
-  box-shadow: 0 4px 14px rgba(56, 189, 248, 0.35);
+  box-shadow: 0 6px 18px rgba(56, 189, 248, 0.4);
 }
 
 .repo-submit-btn:disabled {
@@ -545,8 +574,8 @@ html, body {
 }
 
 .btn-spinner {
-  width: 16px;
-  height: 16px;
+  width: 18px;
+  height: 18px;
   border: 2px solid rgba(255, 255, 255, 0.3);
   border-top-color: #ffffff;
   border-radius: 50%;
@@ -1344,35 +1373,43 @@ html, body {
   }
 
   .hero-landing-section {
-    padding: 12px 12px 8px;
+    padding: 24px 16px 20px;
+    overflow-y: auto;
+    overflow-x: hidden;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .hero-content {
+    padding: 10px 0;
+    margin: auto 0;
   }
 
   .hero-badge {
-    font-size: 0.68rem;
-    padding: 3px 10px;
-    margin-bottom: 10px;
-    gap: 4px;
+    font-size: 0.72rem;
+    padding: 4px 12px;
+    margin-bottom: 12px;
+    gap: 6px;
   }
 
   .hero-title {
-    font-size: 1.4rem;
+    font-size: 1.65rem;
     line-height: 1.25;
-    margin-bottom: 8px;
-    max-width: 320px;
+    margin-bottom: 10px;
+    max-width: 100%;
   }
 
   .hero-description {
-    font-size: 0.78rem;
-    line-height: 1.4;
-    margin-bottom: 16px;
-    max-width: 280px;
+    font-size: 0.85rem;
+    line-height: 1.45;
+    margin-bottom: 20px;
+    max-width: 100%;
   }
 
   .input-group-main {
     flex-wrap: wrap;
-    padding: 4px 6px;
-    gap: 6px;
-    border-radius: var(--radius-md);
+    padding: 8px 10px;
+    gap: 10px;
+    border-radius: var(--radius-lg);
   }
 
   .input-icon-wrapper {
@@ -1381,39 +1418,39 @@ html, body {
 
   .repo-text-input {
     width: 100%;
-    font-size: 0.82rem;
-    padding: 5px 0;
+    font-size: 0.95rem;
+    padding: 6px 2px;
   }
 
   .repo-text-input::placeholder {
-    font-size: 0.78rem;
+    font-size: 0.85rem;
   }
 
   .repo-submit-btn {
     width: 100%;
     justify-content: center;
-    padding: 8px 12px;
-    font-size: 0.82rem;
-    border-radius: var(--radius-sm);
+    padding: 12px 16px;
+    font-size: 0.92rem;
+    border-radius: var(--radius-md);
   }
 
   .popular-chips-bar {
-    margin-top: 10px;
-    gap: 6px;
+    margin-top: 14px;
+    gap: 8px;
   }
 
   .chips-label {
-    font-size: 0.72rem;
+    font-size: 0.76rem;
   }
 
   .repo-chip {
-    padding: 3px 7px;
-    font-size: 0.7rem;
+    padding: 5px 10px;
+    font-size: 0.74rem;
   }
 
   .landing-footer {
-    padding: 6px 10px;
-    font-size: 0.74rem;
+    padding: 16px 10px 20px;
+    font-size: 0.78rem;
   }
 
   .explorer-workspace {
